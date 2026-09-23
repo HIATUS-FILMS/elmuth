@@ -2,7 +2,9 @@
 
 import config
 import databases
+import control
 from bcolors import bcolors
 
 config.config_soft()
 databases.init_db()
+control.webserver()
