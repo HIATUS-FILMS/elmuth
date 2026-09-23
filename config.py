@@ -18,14 +18,10 @@ def config_soft():
             config = {
                 "server": {
                     "port": "8080",
-                    "username": "CHANGE_ME",
-                    "password": "CHANGE_ME",
                 },
                 "ffplayout": {
                     "base_url": "http://192.168.1.X:8787", # Change this with your server IP
                     "channel_id": "1",
-                    "ffusername": "CHANGE_ME",
-                    "ffpassword": "CHANGE_ME",
                     "overlay_id": "3",
                 },
                 "media": {
