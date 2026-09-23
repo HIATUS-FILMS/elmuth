@@ -20,3 +20,22 @@ What is the current status of elmuth's development?
 The project is still in its early stages, and the first pre-alpha versions should be released within a few weeks or months.
 
 Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, CSS and Javascript code.
+
+Roadmap (For v1.0)
+-------------------
+
+* Software base
+- [x] Config file & database support
+- [ ] Media scan
+- [ ] Playlist generator
+
+* WebUI
+- [x] Setup wizard (Not working yet)
+- [ ] Playlist editor
+- [ ] Playout control
+- [ ] Settings section
+- [ ] Media asset management
+
+* ffplayout
+- [ ] ffplayout connexion
+- [ ] ffplayout control
