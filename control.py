@@ -50,7 +50,7 @@ def webserver():
             write_db()
             with open('settings/config.json', 'r+') as f:
                 data = json.load(f)
-                data['base_url'] = ffaddress
+                data['ffplayout']['base_url'] = ffaddress
                 f.seek(0)
                 json.dump(data, f, indent=4)
                 f.truncate()
@@ -90,6 +90,10 @@ def webserver():
             if check_pass == True:
                 return redirect("/dashboard", code=302)
         return render_template('login.html')
+
+    @app.route('/dashboard', methods=['GET', 'POST'])
+    def dashboard_page():
+        return render_template('dashboard.html')
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

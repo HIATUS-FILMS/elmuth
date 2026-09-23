@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-transparent text-slate-100 min-h-screen flex flex-col font-sans" action="/dashboard" method="POST">
+    
+    <div class="px-6 py-4 flex flex-col items-center bg-transparent">
+        <div class="px-6 py-4 flex flex-col items-center">
+            <img class="h-10 object-cover ..." src="static/img/logo.png">
+        </div>
+        <div class="mx-auto flex max-w-sm items-center gap-x-4 rounded-full bg-white p-0 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+            <ul class="flex">
+                <li class="flex-1 mr-2">
+                    <a class="text-center block border border-gray-500 rounded-full py-1 px-4 bg-gray-900 hover:bg-transparent text-gray-200" href="#">Broadcast</a>
+                </li>
+                <li class="flex-1 mr-2">
+                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Playout</a>
+                </li>
+                <li class="flex-1 mr-2">
+                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Medias</a>
+                </li>
+                <li class="flex-1 mr-2">
+                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Settings</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 p-4 flex-1">
+        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col items-center">
+            <p class="text-slate-300 font-medium">Time</p>
+            <div class="bg-black rounded-2xl flex-1 w-full items-center">
+                <p id="time" class="text-center text-red-600 font-mono text-[35px]">00:00:00:00</p>
+            </div>
+        </div>
+        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col items-center">
+            <p class="text-slate-300 font-medium">Remaining time</p>
+            <div class="bg-black rounded-2xl flex-1 w-full items-center">
+                <p class="text-center text-green-600 font-mono text-[35px]">00:00:00:00</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="grid grid-cols-12 gap-4 p-4 flex-1">
+        
+        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Playlist</h2>
+            <div class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
+                <div class="p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer">
+                    <p class="text-slate-300 font-medium">Filename.mp4</p>
+                    <span class="text-[10px] text-slate-500">00:00 • Ready</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
+            <div class="text-xs font-medium text-slate-300 mb-2 truncate">
+                Live • Media title
+            </div>
+
+            <div class="bg-black aspect-video rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group">
+                <iframe src="https://www.youtube.com/embed/jNQXAC9IVRw?si=Sma8XzTFMvnkBte3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="h-full w-full"></iframe>
+            </div>
+
+            <div class="mt-4 space-y-2">
+                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                    <div class="bg-emerald-500 w-1/3 h-full"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-500">
+                    <span>Time lasted : 00:00</span>
+                    <div class="flex gap-3 text-slate-400">
+                        <button class="hover:text-white">Previous</button>
+                        <button class="hover:text-white">Pause</button>
+                        <button class="hover:text-white">Next</button>
+                    </div>
+                    <span>Remaining time : 00:00</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
+            <div class="space-y-4">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ffplayout message</h2>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider">Message text</label>
+                    <textarea class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-slate-600" rows="2"></textarea>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        
+        // Récupération des heures, minutes, secondes et millisecondes
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const milliseconds = String(now.getMilliseconds()).padStart(3, '0'); // 3 chiffres pour les ms
+        
+        // Affichage au format HH:MM:SS.mmm
+        document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}:${milliseconds}`;
+        
+        // Demande au navigateur de relancer la fonction le plus vite possible (environ toutes les 1 à 10 millisecondes)
+        requestAnimationFrame(updateClock);
+    }
+    
+    // Lancement de l'horloge au chargement de la page
+    requestAnimationFrame(updateClock);
+</script>
+{% endblock %}
