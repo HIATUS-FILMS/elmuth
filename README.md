@@ -1,4 +1,4 @@
-![Project](http://www.image-heberg.fr/files/1790018688165833045.png)
+![Logo](static/img/logo.png)
 
 elmuth - for ffplayout
 ===============
@@ -6,6 +6,8 @@ elmuth - for ffplayout
 Elmuth aims to manage a television playout system capable of scheduling a broadcast lineup. It is designed to work with ffplayout.
 
 Originally conceived for a French WebTV project, the project aims to follow a roadmap that will enable it to serve a wider variety of projects while making the technology accessible to as many people as possible.
+
+![Project](http://www.image-heberg.fr/files/1790018688165833045.png)
 
 Is AI accepted in code ?
 -------------------
