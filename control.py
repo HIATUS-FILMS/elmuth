@@ -5,6 +5,7 @@ from bcolors import bcolors
 import datetime
 import sqlite3
 import json
+from cryptography.fernet import Fernet
 
 app = Flask(__name__)
 
@@ -14,8 +15,10 @@ def webserver():
     def setup_page():
         if request.method == 'POST':
             ffuser = request.form['ffuser']
+            ffkey = Fernet.generate_key().decode('utf-8')
+            cipher_suite = Fernet(ffkey.encode('utf-8'))
             ffpassword_plain = request.form['ffpassword']
-            ffpassword_hashed = generate_password_hash(ffpassword_plain, method="pbkdf2:sha256")
+            ffpassword_hashed = cipher_suite.encrypt(ffpassword_plain.encode('utf-8'))
             ffaddress = request.form['ffaddress']
             eluser = request.form['eluser']
             elpassword_plain = request.form['elpassword']
@@ -51,6 +54,7 @@ def webserver():
             with open('settings/config.json', 'r+') as f:
                 data = json.load(f)
                 data['ffplayout']['base_url'] = ffaddress
+                data['ffplayout']['private_key'] = ffkey
                 f.seek(0)
                 json.dump(data, f, indent=4)
                 f.truncate()
@@ -85,7 +89,6 @@ def webserver():
                 check_pass = check_password_hash(result[0], loginpassword)
                 return check_pass
 
-            read_db()
             check_pass = read_db()
             if check_pass == True:
                 return redirect("/dashboard", code=302)

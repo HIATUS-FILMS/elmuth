@@ -13,8 +13,8 @@ def config_soft(): #function to verify if config.json exists, and generates it i
     if os.path.exists(file_path): #config.json exists
         config_size = os.path.getsize('settings/config.json') #so we verify if it's not empty
         if config_size == 0: #config.json is empty, but less empty than me coding that
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + datetime.datetime.now().strftime("%H:%M:%S") + "  [ERROR] The configuration file does not exist" + bcolors.ENDC)
-            print(bcolors.WARNING + datetime.datetime.now().strftime("%H:%M:%S") + datetime.datetime.now().strftime("%H:%M:%S") + " [WARN] Creating the configuration file..." + bcolors.ENDC)
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + "  [ERROR] The configuration file does not exist" + bcolors.ENDC)
+            print(bcolors.WARNING + datetime.datetime.now().strftime("%H:%M:%S") + " [WARN] Creating the configuration file..." + bcolors.ENDC)
             config = {
                 "server": {
                     "port": "8080",
@@ -23,6 +23,7 @@ def config_soft(): #function to verify if config.json exists, and generates it i
                     "base_url": "http://192.168.1.X:8787", # Change this with your server IP
                     "channel_id": "1",
                     "overlay_id": "3",
+                    "private_key" : "GENERATED_WHEN_SETUP",
                 },
                 "media": {
                     "assets_dir": "/var/lib/ffplayout/tv-media/00-assets",
@@ -65,6 +66,7 @@ def config_soft(): #function to verify if config.json exists, and generates it i
                 "base_url": "http://192.168.1.X:8787", # Change this with your server IP too
                 "channel_id": "1",
                 "overlay_id": "3",
+                "private_key" : "GENERATED_WHEN_SETUP",
             },
             "media": {
                 "assets_dir": "/var/lib/ffplayout/tv-media/00-assets",
