@@ -29,9 +29,9 @@ elmuth is distributed under the GNU General Public License GPLv3, see LICENSE fi
 elmuth uses the following third party libraries :
 
 * Flask (BSD License)
-* Werzeug (BSD License)
+* Werkzeug (BSD License)
 * cryptography | Fernet (Apache 2.0 / BSD License)
-* requests (BSD license)
+* requests (Apache 2.0 license)
 * Jinja2 (BSD License)
 * Tailwind CSS (MIT License)
 
@@ -45,7 +45,7 @@ Roadmap (For v1.0)
 - [ ] Playlist generator
 
 * WebUI
-- [x] Setup wizard (Not working yet)
+- [x] Setup wizard
 - [ ] Playlist editor
 - [ ] Playout control
 - [ ] Settings section
