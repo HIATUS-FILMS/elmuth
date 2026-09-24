@@ -21,6 +21,21 @@ The project is still in its early stages, and the first pre-alpha versions shoul
 
 Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, CSS and Javascript code.
 
+
+License
+-------------------
+elmuth is distributed under the GNU General Public License GPLv3, see LICENSE file for details.
+
+elmuth uses the following third party libraries :
+
+* Flask (BSD License)
+* Werzeug (BSD License)
+* cryptography | Fernet (Apache 2.0 / BSD License)
+* requests (BSD license)
+* Jinja2 (BSD License)
+* Tailwind CSS (MIT License)
+
+
 Roadmap (For v1.0)
 -------------------
 
