@@ -63,5 +63,5 @@ Roadmap (For v1.0)
 - [ ] Media asset management
 
 * ffplayout
-- [ ] ffplayout connexion
+- [x] ffplayout connexion (Work in progress)
 - [ ] ffplayout control
