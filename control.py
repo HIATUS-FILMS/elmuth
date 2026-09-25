@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from bcolors import bcolors
@@ -9,10 +10,51 @@ from cryptography.fernet import Fernet
 
 app = Flask(__name__)
 
-def webserver():
+app.secret_key = os.urandom(24).hex()
 
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login_page'
+
+class User(UserMixin):
+    def __init__(self, username):
+        self.id = username
+
+@login_manager.user_loader
+def load_user(username):
+
+    with open('settings/config.json', 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    
+    auth_path = config["db"]["auth_path"]
+    authdb = sqlite3.connect(auth_path)
+    cursor = authdb.cursor()
+
+    cursor.execute("SELECT username FROM el_credentials WHERE username = ?", (username,))
+    result = cursor.fetchone()
+    authdb.close()
+
+    if result:
+        return User(result[0])
+
+    return None
+
+def setup_status():
+    os.makedirs('databases', exist_ok=True) #verify if the folder exists
+    db_path = 'databases/auth.db' #defines the auth.db path
+
+    if not os.path.exists(db_path) or os.path.getsize(db_path) == 0: #file does not exists or 0b in size
+            return False
+
+    return True
+
+
+def webserver():
     @app.route('/setup', methods=['GET', 'POST'])
     def setup_page():
+        if setup_status():
+            return redirect("/login", code=302)
+
         if request.method == 'POST':
             ffuser = request.form['ffuser']
             ffkey = Fernet.generate_key().decode('utf-8')
@@ -86,15 +128,21 @@ def webserver():
                 result = cursor_auth.fetchone()
                 authdb.close()
 
+                if result is None:
+                    return False
+
                 check_pass = check_password_hash(result[0], loginpassword)
                 return check_pass
 
             check_pass = read_db()
             if check_pass == True:
+                user_obj = User(loginuser)
+                flask_login.login_user(user_obj)
                 return redirect("/dashboard", code=302)
         return render_template('login.html')
 
     @app.route('/dashboard', methods=['GET', 'POST'])
+    @flask_login.login_required
     def dashboard_page():
         return render_template('dashboard.html')
 
