@@ -9,4 +9,3 @@ from bcolors import bcolors
 config.config_soft()
 databases.init_db()
 control.webserver()
-ffplayout.getinfo_current_media()

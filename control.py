@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import flask_login
 from flask_login import UserMixin, LoginManager, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,6 +8,7 @@ import datetime
 import sqlite3
 import json
 from cryptography.fernet import Fernet
+from ffplayout import getinfo_current_media
 
 app = Flask(__name__)
 
@@ -165,6 +166,20 @@ def webserver():
     @flask_login.login_required
     def dashboard_page():
         return render_template('dashboard.html')
+
+    print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
+
+    @app.route('/dashboard/status')
+    @flask_login.login_required
+    def dashboard_status():
+        media_data = getinfo_current_media()
+        if media_data:
+            if "media" in media_data and "source" in media_data["media"]:
+                file_path = media_data["media"]["source"]
+                file_name = os.path.splitext(os.path.basename(file_path))[0]
+                media_data["media"]["title"] = file_name
+                return jsonify(media_data)
+        return jsonify({"error": "Unable to fetch your data"}), 500
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)
