@@ -108,6 +108,20 @@ def getinfo_current_media():
     if getinfo.status_code == 200:
         return getinfo.json()
 
+def getinfo_current_playlist():
+
+    headers = {
+        'Authorization': f'Bearer {get_access_token()}',
+        'Content-Type': 'application/json',
+        }
+
+    today = datetime.date.today().strftime('%Y-%m-%d')
+    url = readaddress() + '/api/playlist/' + readid() + '?date=' + today
+    getinfo = requests.get(url, headers=headers)
+    print(getinfo.status_code)
+    if getinfo.status_code == 200:
+        return getinfo.json()
+
 def sendinfo_overlay(): #not working rn, will fix that later
 
     headers = {
