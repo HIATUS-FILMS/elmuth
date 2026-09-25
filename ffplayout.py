@@ -94,16 +94,30 @@ def get_access_token():
     if cached_token and time.time() < token_expiration_time:
         return cached_token
     return get_new_access_token()
+def getinfo_get():
 
-def getinfo_current_media():
+    def getinfo_current_media():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+        headers = {
+            'Authorization': f'Bearer {get_access_token()}',
+            'Content-Type': 'application/json',
+            }
 
-    url = readaddress() + '/api/control/' + readid() + '/media/current'
-    getinfo = requests.get(url, headers=headers)
-    print(getinfo.status_code)
-    if getinfo.status_code == 200:
-        return getinfo.json()
+        url = readaddress() + '/api/control/' + readid() + '/media/current'
+        getinfo = requests.get(url, headers=headers)
+        print(getinfo.status_code)
+        if getinfo.status_code == 200:
+            return getinfo.json()
+
+    def getinfo_current_media():
+
+        headers = {
+            'Authorization': f'Bearer {get_access_token()}',
+            'Content-Type': 'application/json',
+            }
+
+        url = readaddress() + '/api/control/' + readid() + '/media/current'
+        getinfo = requests.get(url, headers=headers)
+        print(getinfo.status_code)
+        if getinfo.status_code == 200:
+            return getinfo.json()

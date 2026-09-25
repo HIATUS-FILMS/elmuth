@@ -58,7 +58,10 @@
             </div>
 
             <div class="bg-black aspect-video rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group">
-                <iframe src="https://www.youtube.com/embed/jNQXAC9IVRw?si=Sma8XzTFMvnkBte3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="h-full w-full"></iframe>
+                <video id="videoPlayer" class="h-full w-full rounded-lg" controls autoPlay>
+                <source src="http://127.0.0.1:8787/public/1/live/master.m3u8" type="video/m3u8" />
+                Your browser does not support the video tag.
+                </video>
             </div>
 
             <div class="mt-4 space-y-2">
@@ -111,5 +114,21 @@
     
     // Lancement de l'horloge au chargement de la page
     requestAnimationFrame(updateClock);
+
+    var video = document.getElementById('videoPlayer');
+        
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource('http://127.0.0.1:8787/public/1/live/master.m3u8');
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = 'http://127.0.0.1:8787/public/1/live/master.m3u8';
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
 </script>
 {% endblock %}

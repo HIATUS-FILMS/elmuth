@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import UserMixin
+import flask_login
+from flask_login import UserMixin, LoginManager, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from bcolors import bcolors
@@ -12,7 +13,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(24).hex()
 
-login_manager = flask_login.LoginManager()
+login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login_page'
 
@@ -45,6 +46,25 @@ def setup_status():
 
     if not os.path.exists(db_path) or os.path.getsize(db_path) == 0: #file does not exists or 0b in size
             return False
+
+    try:
+        authdb = sqlite3.connect(db_path)
+        cursor = authdb.cursor()
+
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='el_credentials';")
+        if not cursor.fetchone():
+            authdb.close()
+            return False
+
+        cursor.execute("SELECT COUNT(*) FROM el_credentials")
+        count = cursor.fetchone()[0]
+        authdb.close()
+
+        if count == 0:
+            return False
+
+    except Exception:
+        return False
 
     return True
 
@@ -137,7 +157,7 @@ def webserver():
             check_pass = read_db()
             if check_pass == True:
                 user_obj = User(loginuser)
-                flask_login.login_user(user_obj)
+                login_user(user_obj)
                 return redirect("/dashboard", code=302)
         return render_template('login.html')
 
