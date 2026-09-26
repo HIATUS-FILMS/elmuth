@@ -1,4 +1,6 @@
-    function updateClock() {
+let activeMediaTitle = '';
+
+function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -50,6 +52,7 @@ function updateDashboardState() {
         .then(data => {
             if (data && data.media && data.media.title) {
                 document.getElementById('media-title').innerText = data.media.title;
+                activeMediaTitle = data.media.title;
             }
             
             if (data && data.media && data.media.duration) {
@@ -72,9 +75,6 @@ function updateDashboardState() {
 }
 
 function updatePlaylistState() {
-    const currentTitleElement = document.getElementById('media-title');
-    const currentActiveTitle = currentTitleElement ? currentTitleElement.innerText : '';
-
     fetch('/dashboard/running')
     .then(response => response.json())
     .then(data => {
@@ -86,7 +86,7 @@ function updatePlaylistState() {
             data.program.forEach((item) => {
                 const itemDiv = document.createElement('div');
                 
-                const isPlaying = (item.title === currentActiveTitle);
+                const isPlaying = (item.title === activeMediaTitle);
 
                 if (isPlaying) {
                     itemDiv.className = 'p-2.5 rounded-xl bg-green-800/40 border border-green-800/50 hover:border-slate-700 cursor-pointer animate-pulse';
@@ -109,4 +109,5 @@ function updatePlaylistState() {
 
 updatePlaylistState();
 
+setInterval(updatePlaylistState, 6000);
 setInterval(updateDashboardState, 1000);
