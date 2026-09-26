@@ -72,6 +72,9 @@ function updateDashboardState() {
 }
 
 function updatePlaylistState() {
+    const currentTitleElement = document.getElementById('media-title');
+    const currentActiveTitle = currentTitleElement ? currentTitleElement.innerText : '';
+
     fetch('/dashboard/running')
     .then(response => response.json())
     .then(data => {
@@ -80,25 +83,28 @@ function updatePlaylistState() {
         if (data && data.program) {
             container.innerHTML = '';
             
-            data.program.forEach((item, index) => {
-
+            data.program.forEach((item) => {
                 const itemDiv = document.createElement('div');
-                if (index === 0) {
-                        itemDiv.className = 'p-2.5 rounded-xl bg-green-800/40 border border-green-800/50 hover:border-slate-700 cursor-pointer animate-pulse';
-                    } else {
-                        itemDiv.className = 'p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer';
-                    }
                 
+                const isPlaying = (item.title === currentActiveTitle);
+
+                if (isPlaying) {
+                    itemDiv.className = 'p-2.5 rounded-xl bg-green-800/40 border border-green-800/50 hover:border-slate-700 cursor-pointer animate-pulse';
+                } else {
+                    itemDiv.className = 'p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer';
+                }
+                
+                const formattedDuration = formatDuration(item.duration);
                 itemDiv.innerHTML = `
                     <p class="text-slate-300 font-medium">${item.title}</p>
-                    <span class="text-[10px] text-slate-500">${Math.round(item.duration)}s • Ready</span>
+                    <span class="text-[10px] text-slate-500">${formattedDuration} • Ready</span>
                 `;
                 
                 container.appendChild(itemDiv);
             });
         }
     })
-    .catch(error => console.error('Erreur :', error));
+    .catch(error => console.error('Error :', error));
 }
 
 updatePlaylistState();

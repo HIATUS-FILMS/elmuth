@@ -51,8 +51,12 @@
         </section>
 
         <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
-
+            <div class="flex items-center gap-2">
+                <p id="media-title"></p>
+                <p id="media-duration"></p>
+            </div>
             <div class="bg-black aspect-video rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group">
+                
                 <video id="videoPlayer" class="h-full w-full rounded-lg" controls autoPlay>
                 <source src="http://127.0.0.1:8787/public/1/live/master.m3u8" type="video/m3u8" />
                 Your browser does not support the video tag.
