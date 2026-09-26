@@ -29,6 +29,8 @@ function updateClock() {
             });
         }
 
+//the cod below will be replaced with HTMX with Jinja2 later
+
 function formatDuration(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -109,5 +111,5 @@ function updatePlaylistState() {
 
 updatePlaylistState();
 
-setInterval(updatePlaylistState, 6000);
+setInterval(updatePlaylistState, 5000);
 setInterval(updateDashboardState, 1000);
