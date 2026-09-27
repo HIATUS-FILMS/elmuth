@@ -162,10 +162,12 @@ def webserver():
                 return redirect("/dashboard", code=302)
         return render_template('login.html')
 
+    
+    @app.route('/')
     @app.route('/dashboard', methods=['GET', 'POST'])
     @flask_login.login_required
     def dashboard_page():
-        return render_template('dashboard.html')
+        return render_template('dashboard.html', media=getinfo_current_media())
 
     @app.route('/dashboard/status')
     @flask_login.login_required
@@ -178,6 +180,89 @@ def webserver():
                 media_data["media"]["title"] = file_name
                 return jsonify(media_data)
         return jsonify({"error": "Unable to fetch your data"}), 500
+
+    @app.route('/dashboard/status/current_media')
+    @flask_login.login_required
+    def dashboard_status_curmed():
+        media_data = getinfo_current_media()
+
+        title = "Nothing is playing"
+
+        if media_data:
+            if "media" in media_data and "source" in media_data["media"]:
+                file_path = media_data["media"]["source"]
+                file_name = os.path.splitext(os.path.basename(file_path))[0]
+                title = file_name
+
+        media_name = {
+            "title": title
+        }
+
+        return title
+
+    @app.route('/dashboard/status/current_elapsed')
+    @flask_login.login_required
+    def dashboard_status_curelap():
+        media_data = getinfo_current_media()
+
+        elapsed = "00:00"
+
+        if media_data:
+            if media_data and "elapsed" in media_data:
+                elapsed = media_data["elapsed"]
+
+        media_elapsed = {
+            "elapsed": elapsed
+        }
+
+        minutes = int(elapsed / 60)
+        seconds = int(elapsed % 60)
+        elapsed_post = f"{minutes}:{seconds}"
+
+        return elapsed_post
+
+    @app.route('/dashboard/status/current_duration')
+    @flask_login.login_required
+    def dashboard_status_curdur():
+        media_data = getinfo_current_media()
+
+        duration = "00:00"
+
+        if media_data:
+            if "media" in media_data and "duration" in media_data["media"]:
+                duration = media_data["media"]["duration"]
+
+        media_duration = {
+            "duration": duration
+        }
+
+        minutes = int(duration / 60)
+        seconds = int(duration % 60)
+        duration_post = f"{minutes}:{seconds}"
+
+        return duration_post
+
+    @app.route('/dashboard/status/progress')
+    @flask_login.login_required
+    def dashboard_status_progress():
+        media_data = getinfo_current_media()
+
+        duration = 0
+        elapsed = 0
+
+        if media_data:
+            if "media" in media_data and "duration" in media_data["media"]:
+                duration = media_data["media"]["duration"]
+            if media_data and "elapsed" in media_data:
+                elapsed = media_data["elapsed"]
+
+        if duration > 0:
+            progress = int((elapsed / duration) * 100)
+        else:
+            progress = 0
+        progress_post = f"width: {progress}%;"
+
+        return f'<div class="bg-emerald-500 h-full transition-all duration-500" style="width: {progress}%;" hx-get="/dashboard/status/progress" hx-trigger="every 0.5s" hx-swap="outerHTML"></div>'
 
     @app.route('/dashboard/running')
     @flask_login.login_required

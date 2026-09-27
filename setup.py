@@ -1,1 +1,0 @@
-# This will be the initial setup part, managing the first run of elmuth with the installation page on the webui

@@ -2,6 +2,7 @@
 
 {% block content %}
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 <div class="bg-transparent text-slate-100 min-h-screen flex flex-col font-sans">
     
     <div class="px-6 py-4 flex flex-col items-center bg-transparent">
@@ -45,9 +46,7 @@
         
         <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Queue</h2>
-            <div id="current-queue" class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
-
-            </div>
+            {% include "modules/playlist.html" %}
         </section>
 
         <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
@@ -64,11 +63,9 @@
             </div>
 
             <div class="mt-4 space-y-2">
-                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
-                    <div id="progress" class="bg-emerald-500 w-1/3 h-full"></div>
-                </div>
+                {% include "modules/progress.html" %}
                 <div class="flex justify-between text-xs text-slate-500">
-                    <span id="media-elapsed">Time elapsed : 00:00</span>
+                    {% include "modules/elapsed_current.html" %}
                     <div class="flex gap-3 text-slate-400">
                         <button id="previous-btn" class="hover:text-white">Previous</button>
                         <button id="pause-btn" class="hover:text-white">Pause</button>

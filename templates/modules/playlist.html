@@ -1,0 +1,9 @@
+            <div class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
+                <div class="p-2.5 rounded-xl bg-green-800/40 border border-green-800/50 hover:border-slate-700 cursor-pointer animate-pulse">
+                    <p hx-get="/dashboard/status/current_media" hx-trigger="every 1s" hx-swap="innerHTML" class="text-slate-300 font-medium"> Title </p>
+                    <div class="status-row">
+                        <span hx-get="/dashboard/status/current_duration" hx-trigger="every 1s" hx-swap="innerHTML" class="text-[10px] text-slate-500"> Duration </span>
+                        <span class="text-[10px] text-slate-500"> - Playing </span>
+                    </div>
+                </div>
+            </div>
