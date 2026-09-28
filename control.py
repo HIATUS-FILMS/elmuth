@@ -264,20 +264,25 @@ def webserver():
 
         return f'<div class="bg-emerald-500 h-full transition-all duration-500" style="width: {progress}%;" hx-get="/dashboard/status/progress" hx-trigger="every 0.5s" hx-swap="outerHTML"></div>'
 
+#oh god, the playlist part was a nightmare and is still full of bugs...
+
     @app.route('/dashboard/running')
     @flask_login.login_required
     def dashboard_running():
-        playlist_data = getinfo_current_playlist()
+        playlist_data = getinfo_current_playlist() #fetch and store raw current playlist data
+
         if playlist_data:
-            items = playlist_data.get("program", [])
+            items = playlist_data.get("program", []) #extract every media in "program" row
+            cur_media = getinfo_current_media()["media"]["source"] #we store the current playing media location
             
-            for item in items:
-                if "source" in item:
+            for item in items: #chunk of code looping on each media on the list
+                if "source" in item: #checking if the element contains "source" key
+                    item["is_current"] = (item["source"] == cur_media) #compare item source with current media playing source
                     file_path = item["source"]
                     file_name = os.path.splitext(os.path.basename(file_path))[0]
                     item["title"] = file_name
-                    
-            return jsonify(playlist_data)
+            
+            return render_template('modules/playlist.html', playlist=items)
             
         return jsonify({"error": "Unable to fetch your data"}), 500
 
