@@ -27,29 +27,29 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-2 p-4 flex-1">
-        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col items-center">
-            <p class="text-slate-300 font-medium">Time</p>
-            <div class="bg-black rounded-2xl flex-1 w-full items-center">
-                <p id="time" class="text-center text-red-600 font-mono text-[35px]">00:00:00:00</p>
+    <div class="gap-2 p-1 flex mb-4">
+        <div class="w-1/2 bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+            <p class="text-slate-300 uppercase font-semibold">Time</p>
+            <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                <p id="time" class="text-center text-red-500 font-mono text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
             </div>
         </div>
-        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col items-center">
-            <p class="text-slate-300 font-medium">Remaining time</p>
-            <div class="bg-black rounded-2xl flex-1 w-full items-center">
-                <p class="text-center text-green-600 font-mono text-[35px]">00:00:00:00</p>
+        <div class="w-1/2 bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+            <p class="text-slate-300 uppercase font-semibold">Remaining time (Playlist)</p>
+            <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                <p class="text-center text-green-500 font-mono text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
             </div>
         </div>
     </div>
 
-    <main class="grid grid-cols-12 gap-4 p-4 flex-1">
+    <main class="grid grid-cols-12 gap-4 p-1 flex-1">
         
-        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
+        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Queue</h2>
             {% include "modules/playlist.html" %}
         </section>
 
-        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col">
+        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
             <div class="flex items-center gap-2">
                 <p id="media-title"></p>
                 <p id="media-duration"></p>
@@ -62,28 +62,116 @@
                 </video>
             </div>
 
-            <div class="mt-4 space-y-2">
-                {% include "modules/progress.html" %}
+            <div class="mt-4 space-y-2 bg-slate-900 border border-slate-800/80 rounded-2xl p-4">
+                <div class="flex justify-center text-xs text-slate-500">
+                    <div class="flex gap-3 text-slate-400">
+                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏮&#xFE0E;</button>
+                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⯈&#xFE0E;</button>
+                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏹&#xFE0E;</button>
+                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏭&#xFE0E;</button>
+                    </div>
+                </div>
+                <div>
+                    {% include "modules/progress.html" %}
+                </div>
                 <div class="flex justify-between text-xs text-slate-500">
                     {% include "modules/elapsed_current.html" %}
-                    <div class="flex gap-3 text-slate-400">
-                        <button id="previous-btn" class="hover:text-white">Previous</button>
-                        <button id="pause-btn" class="hover:text-white">Pause</button>
-                        <button id="next-btn" class="hover:text-white">Next</button>
-                    </div>
                     <span id="media-remaining">Remaining time : 00:00</span>
                 </div>
             </div>
         </section>
 
-        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between">
-            <div class="space-y-4">
+        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between max-h-fit">
+            <div class="space-y-2">
                 <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ffplayout message</h2>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] text-slate-400 uppercase tracking-wider">Message text</label>
-                    <textarea class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-slate-600" rows="2"></textarea>
-                </div>
+                <form class="w-full space-y-0">
+                    <label for="message" class="block mb-1 text-sm font-medium text-heading">Message text</label>
+                    <textarea id="message" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" placeholder="Important announcement..."></textarea>
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Font</label>
+                            <select class=" shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline">
+                                <option>Font 1</option>
+                                <option>Font 2</option>
+                                <option>Font 3</option>
+                            </select> 
+                        </div>
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Font size</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="24">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">X axis</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="center">  
+                        </div>  
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Y axis</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="end:72">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Scrolling</label>
+                            <select class=" shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline">
+                                <option>Right to left</option>
+                                <option>Left to right</option>
+                            </select> 
+                        </div>
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Speed</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="100">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Text color</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="#ffffff">  
+                        </div>  
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Text opacity</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="1">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Background color</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="#000000">  
+                        </div>  
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Y axis</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="0,8">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Border</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="4">  
+                        </div>  
+                        <div class="w-1/2">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Spacing</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="4">  
+                        </div>             
+                    </div>
+
+                    <div class="gap-2 p-0 flex mb-1.5">
+                        <div class="w-full">
+                            <label for="message" class="block mb-1 text-sm font-medium text-heading">Repetition</label>
+                            <input class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="-1">  
+                        </div>               
+                    </div>
+
+                    <input type="checkbox" class="shrink-0 size-4 bg-transparent border-line-3 rounded-sm shadow-2xs text-primary focus:ring-0 focus:ring-offset-0 checked:bg-primary-checked checked:border-primary-checked disabled:opacity-50 disabled:pointer-events-none" id="hs-checked-checkbox" checked>
+                    <label for="hs-checked-checkbox" class="text-sm ms-3 text-muted-foreground-1">Text background</label>
+                    <button class="cursor-not-allowed bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full">➤&#xFE0E; Send message</button>
+                </form>
             </div>
         </section>
 
