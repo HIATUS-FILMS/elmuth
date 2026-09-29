@@ -3,6 +3,9 @@
 elmuth - for ffplayout
 ===============
 
+> [!CAUTION]
+> elmuth is not ready for production; use it only for testing purposes.
+
 Elmuth aims to manage a television playout system capable of scheduling a broadcast lineup. It is designed to work with ffplayout.
 
 Originally conceived for a French WebTV project, the project aims to follow a roadmap that will enable it to serve a wider variety of projects while making the technology accessible to as many people as possible.
