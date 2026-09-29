@@ -48,7 +48,7 @@
 
         <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Queue</h2>
-            <div hx-get="/dashboard/running" hx-trigger="load, every 10s" hx-swap="innerHTML" class="flex-1 flex flex-col overflow-hidden"></div> <!--displaying the queue / playlist module-->
+            <div hx-get="/dashboard/running" hx-trigger="load, every 1s" hx-swap="innerHTML" class="flex-1 flex flex-col overflow-hidden"></div> <!--displaying the queue / playlist module-->
         </section>
 
         <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
@@ -67,10 +67,10 @@
             <div class="mt-4 space-y-2 bg-slate-900 border border-slate-800/80 rounded-2xl p-4">
                 <div class="flex justify-center text-xs text-slate-500">
                     <div class="flex gap-3 text-slate-400">
-                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏮&#xFE0E;</button>
-                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⯈&#xFE0E;</button>
-                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏹&#xFE0E;</button>
-                        <button class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏭&#xFE0E;</button>
+                        <button hx-get="/dashboard/prev" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏮&#xFE0E;</button>
+                        <button hx-get="/dashboard/play" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⯈&#xFE0E;</button>
+                        <button hx-get="/dashboard/stop" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏹&#xFE0E;</button>
+                        <button hx-get="/dashboard/next" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏭&#xFE0E;</button>
                     </div>
                 </div>
                 <div>

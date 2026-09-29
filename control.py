@@ -8,7 +8,7 @@ import datetime
 import sqlite3
 import json
 from cryptography.fernet import Fernet
-from ffplayout import getinfo_current_media, getinfo_current_playlist
+from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next
 
 app = Flask(__name__)
 
@@ -285,6 +285,30 @@ def webserver():
             return render_template('modules/playlist.html', playlist=items)
             
         return jsonify({"error": "Unable to fetch your data"}), 500
+
+    @app.route('/dashboard/prev') #action when previous button clicked
+    @flask_login.login_required
+    def dashboard_prev():
+        control_data = sendinfo_prev()
+        return "", 204
+
+    @app.route('/dashboard/play') #action when play button clicked
+    @flask_login.login_required
+    def dashboard_play():
+        control_data = sendinfo_play()
+        return "", 204
+
+    @app.route('/dashboard/stop') #action when stop button clicked
+    @flask_login.login_required
+    def dashboard_stop():
+        control_data = sendinfo_stop()
+        return "", 204
+
+    @app.route('/dashboard/next') #action when next button clicked
+    @flask_login.login_required
+    def dashboard_next():
+        control_data = sendinfo_next()
+        return "", 204
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

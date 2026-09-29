@@ -134,3 +134,67 @@ def sendinfo_overlay(): #not working rn, will fix that later
     print(sendinfo.status_code)
     if sendinfo.status_code == 200:
         return sendinfo.json()
+
+def sendinfo_prev():
+
+    headers = {
+        'Authorization': f'Bearer {get_access_token()}',
+        'Content-Type': 'application/json',
+        }
+
+    url = readaddress() + '/api/control/' + readid() + '/playout'
+    data = {
+        "control":"back"
+    }
+    sendinfo = requests.post(url, headers=headers, json=data)
+    print(sendinfo.status_code)
+    if sendinfo.status_code == 200:
+        return sendinfo.json()
+
+def sendinfo_play():
+
+    headers = {
+        'Authorization': f'Bearer {get_access_token()}',
+        'Content-Type': 'application/json',
+        }
+
+    url = readaddress() + '/api/control/' + readid() + '/process'
+    data = {
+        "command":"start"
+    }
+    sendinfo = requests.post(url, headers=headers, json=data)
+    print(sendinfo.status_code)
+    if sendinfo.status_code == 200:
+        return sendinfo.json()
+
+def sendinfo_stop():
+
+    headers = {
+        'Authorization': f'Bearer {get_access_token()}',
+        'Content-Type': 'application/json',
+        }
+
+    url = readaddress() + '/api/control/' + readid() + '/process'
+    data = {
+        "command":"stop"
+    }
+    sendinfo = requests.post(url, headers=headers, json=data)
+    print(sendinfo.status_code)
+    if sendinfo.status_code == 200:
+        return sendinfo.json()
+
+def sendinfo_next():
+
+    headers = {
+        'Authorization': f'Bearer {get_access_token()}',
+        'Content-Type': 'application/json',
+        }
+
+    url = readaddress() + '/api/control/' + readid() + '/playout'
+    data = {
+        "control":"next"
+    }
+    sendinfo = requests.post(url, headers=headers, json=data)
+    print(sendinfo.status_code)
+    if sendinfo.status_code == 200:
+        return sendinfo.json()
