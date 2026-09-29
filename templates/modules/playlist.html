@@ -1,11 +1,11 @@
-<div class="space-y-2 overflow-y-auto text-xs text-slate-400 h-full">
+<div class="space-y-2 text-xs text-slate-400 h-full">
     {% for media in playlist %} <!--loop scanning each element in media-->
-    <div class="p-2.5 rounded-xl {% if media.is_current %}bg-green-800/40 border-green-800/50 animate-pulse{% else %}bg-slate-800/40 border-slate-700/50{% endif %} border hover:border-slate-600 cursor-pointer"> <!--putting the current media in green and animated-->
+    <div class="p-2.5 rounded-xl {% if media.is_current %}bg-green-800/40 border-green-800/50{% else %}bg-slate-800/40 border-slate-700/50{% endif %} border hover:border-slate-600 cursor-pointer"> <!--putting the current media in green and animated-->
         <p class="text-slate-300 font-medium">{{ media.title }}</p> <!--displaying media title-->
         <div class="status-row flex">
             <span class="text-[10px] text-slate-500">{{ media.duration }}</span> <!--displaying media duration / fixing the time format later-->
             {% if media.is_current %}
-            <span class="text-[10px] text-slate-500 px-1 font-bold"> · ⯈&#xFE0E; Playing </span> <!--label for the current media playing-->
+            <span class="text-[10px] text-slate-500 px-1 font-bold animate-pulse"> · ⯈&#xFE0E; Playing </span> <!--label for the current media playing-->
             {% endif %}
         </div>
     </div>

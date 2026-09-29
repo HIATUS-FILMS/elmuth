@@ -48,7 +48,9 @@
 
         <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
             <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Queue</h2>
-            <div hx-get="/dashboard/running" hx-trigger="load, every 1s" hx-swap="innerHTML" class="flex-1 flex flex-col overflow-hidden"></div> <!--displaying the queue / playlist module-->
+            <div class="overflow-y-auto">
+                <div hx-get="/dashboard/running" hx-trigger="load, every 1.5s" hx-swap="innerHTML" class="flex-1 flex flex-col overflow-hidden"></div> <!--displaying the queue / playlist module-->
+            </div>
         </section>
 
         <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
