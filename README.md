@@ -61,10 +61,10 @@ Roadmap (For v1.0)
 * WebUI
 - [x] Setup wizard
 - [ ] Playlist editor
-- [ ] Playout control
+- [x] Playout control
 - [ ] Settings section
 - [ ] Media asset management
 
 * ffplayout
 - [x] ffplayout connexion
-- [x] ffplayout control (Work in progress)
+- [x] ffplayout control
