@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
 import flask_login
 from flask_login import UserMixin, LoginManager, login_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,7 +8,8 @@ import datetime
 import sqlite3
 import json
 from cryptography.fernet import Fernet
-from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next
+import requests
+from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next, get_access_token, readaddress, readid
 
 app = Flask(__name__)
 
@@ -286,6 +287,16 @@ def webserver():
             
         return jsonify({"error": "Unable to fetch your data"}), 500
 
+    @app.route('/stream/<path:filename>')
+    def proxy_stream(filename):
+        target_url = f"http://127.0.0.1:8787/{filename}"
+        req = requests.get(target_url, stream=True)
+        return Response(
+            req.iter_content(chunk_size=1024),
+            status=req.status_code,
+            content_type=req.headers.get('content-type')
+        )
+
     @app.route('/dashboard/prev') #action when previous button clicked
     @flask_login.login_required
     def dashboard_prev():
@@ -309,6 +320,63 @@ def webserver():
     def dashboard_next():
         control_data = sendinfo_next()
         return "", 204
+
+    @app.route('/dashboard/text', methods=['GET', 'POST']) #ffplayout message data
+    @flask_login.login_required
+    def dashboard_form():
+
+        headers = {
+            'Authorization': f'Bearer {get_access_token()}',
+            'Content-Type': 'application/json',
+            }
+
+        if request.method == 'POST':
+            message = request.form.get('message', '')
+            font = request.form.get('font', 'Font 1')
+            font_size = request.form.get('font_size', '24')
+            x_axis = request.form.get('x_axis', 'center')
+            y_axis = request.form.get('y_axis', 'end:72')
+            scroll = request.form.get('scroll', 'Right to left')
+            speed = request.form.get('speed', '100')
+            txt_color = request.form.get('txt_color', '#ffffff')
+            txt_opacity = request.form.get('txt_opacity', '1')
+            bg_color = request.form.get('bg_color', '#000000')
+            bg_opacity = request.form.get('bg_opacity', '0.8')
+            border = request.form.get('border', '4')
+            spacing = request.form.get('spacing', '4')
+            repeat = request.form.get('repeat', '-1')
+
+            background = request.form.get('background')
+            bg_enabled = True if background else False
+
+            data = {
+                "text": message, 
+                "font_family": font, 
+                "font_size": int(font_size) if font_size.isdigit() else 24, 
+                "position_x": x_axis, 
+                "position_y": y_axis, 
+                "scroll_direction": scroll, 
+                "scroll_speed": int(speed) if speed.isdigit() else 100, 
+                "text_color": txt_color, 
+                "text_opacity": float(txt_opacity) if txt_opacity else 1.0,
+                "background_color": bg_color, 
+                "background_opacity": float(bg_opacity) if bg_opacity else 0.8,
+                "background_padding": int(border) if border.isdigit() else 4,
+                "line_spacing": int(spacing) if spacing.isdigit() else 4,
+                "scroll_repeat": int(repeat) if repeat.lstrip('-').isdigit() else -1,
+                "background_enabled": bg_enabled
+            }
+
+            url = readaddress() + '/api/control/' + readid() + '/text'
+
+            sendinfo = requests.post(url, headers=headers, json=data)
+            print(sendinfo.status_code)
+            if sendinfo.status_code == 200:
+                return sendinfo.json()
+
+            return "", 204
+
+        return render_template('dashboard.html')
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

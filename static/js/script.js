@@ -13,18 +13,18 @@ function updateClock() {
     
     requestAnimationFrame(updateClock);
 
-    var video = document.getElementById('videoPlayer');
-        
-        if (Hls.isSupported()) {
-            var hls = new Hls();
-            hls.loadSource('http://127.0.0.1:8787/public/1/live/master.m3u8');
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play();
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = 'http://127.0.0.1:8787/public/1/live/master.m3u8';
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
-            });
-        }
+var video = document.getElementById('videoPlayer');
+    
+    if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource('/stream/public/1/live/stream.m3u8');
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = 'http://127.0.0.1:8787/public/1/live/stream.m3u8';
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+    }
