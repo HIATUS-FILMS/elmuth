@@ -377,6 +377,11 @@ def webserver():
             return "", 204
 
         return render_template('dashboard.html')
+    
+    @app.route('/playout', methods=['GET', 'POST'])
+    @flask_login.login_required
+    def playout_page():
+        return render_template('playout.html', media=getinfo_current_media())
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)
