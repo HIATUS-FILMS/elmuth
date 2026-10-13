@@ -67,7 +67,7 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                 </div>             
             </div>
 
-            <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0">
+            <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0 py-2">
 
                 <div class="gap-2 p-0 flex mb-1.5">
                     <div class="w-1/2">
@@ -92,41 +92,20 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                 </div>
 
             </form>
-
-            <div class="bg-slate-900 border border-slate-800/80">
-                <table class="table-fixed">
-                <thead>
-                    <tr>
-                    <th>Program name</th>
-                    <th>Season</th>
-                    <th>Type</th>
-                    <th>Fam</th>
-                    <th>Description</th>
-                    <th>Length</th>
-                    <th>First aired</th>
-                    <th>Last aired</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td>Example</td>
-                    <td>2026</td>
-                    <td>MAG</td>
-                    <td>FM</td>
-                    <td>Description example</td>
-                    <td>05:33:53</td>
-                    <td>01/10/2026</td>
-                    <td>04/10/2026</td>
-                    </tr>
-                </tbody>
-                </table>
+            <div class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
+                <div class="p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer">
+                    <p class="text-slate-300 font-medium">Program name (2026)</p>
+                    <span class="text-[10px] text-slate-500">Type : MAG / Family : FM / Length : 05:33<br></span>
+                    <span class="text-[10px] text-slate-500">Description example...<br></span>
+                    <span class="text-[10px] text-slate-500">First aired : 01/10/2026 / Last aired : 04/10/2026</span>
+                </div>
             </div>
         </section>
 
         <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/6">
-                    <p class="block mb-1 text-sm font-medium text-heading">Diffusion - XX/XX/XXXX XX:XX:XX:XX</p>
+                    <p class="block mb-1 text-sm font-medium text-heading">Diffusion - 04/10/2026</p>
                 </div>
                 <div class="w-1/6">
                     <input id="x-axis" name="x_axis" class="shadow appearance-none border rounded w-full py-1 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Date">
@@ -168,32 +147,32 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800/80">
-                <table class="table-fixed">
-                <thead>
-                    <tr>
-                    <th>Playlist</th>
-                    <th>Airing time</th>
-                    <th>Program name</th>
-                    <th>Length</th>
-                    <th>Type</th>
-                    <th>Family</th>
-                    <th>Description</th>
-                    <th>Problem(s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td>2026_04_10</td>
-                    <td>04/10/2026 16:36:53</td>
-                    <td>Example</td>
-                    <td>05:33:53</td>
-                    <td>MAG</td>
-                    <td>FM</td>
-                    <td>Description example</td>
-                    <td>Missing media</td>
-                    </tr>
-                </tbody>
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden mt-3">
+                <table class="w-full text-center border-collapse table-auto">
+                    <thead>
+                        <tr>
+                            <th class="py-2">Playlist</th>
+                            <th class="py-2">Airing time</th>
+                            <th class="py-2">Program name</th>
+                            <th class="py-2">Length</th>
+                            <th class="py-2">Type</th>
+                            <th class="py-2">Family</th>
+                            <th class="py-2">Description</th>
+                            <th class="py-2">Problem(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-slate-800/30 transition-colors cursor-pointer">
+                            <td class="py-2">2026_04_10</td>
+                            <td class="py-2">04/10/2026 16:36:53</td>
+                            <td class="py-2">Example</td>
+                            <td class="py-2">05:33:53</td>
+                            <td class="py-2">MAG</td>
+                            <td class="py-2">FM</td>
+                            <td class="py-2">Description example</td>
+                            <td class="py-2">Missing media</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </section>
