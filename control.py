@@ -12,6 +12,7 @@ import requests
 from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next, get_access_token, readaddress, readid, ffheaders
 from databases import db_connect
 from config import config_soft
+from media import init_db, media_agent
 
 app = Flask(__name__)
 
@@ -71,6 +72,10 @@ def setup_status():
 
 
 def webserver():
+
+    init_db()
+    media_agent()
+
     @app.route('/setup', methods=['GET', 'POST'])
     def setup_page():
         if setup_status():
@@ -255,6 +260,16 @@ def webserver():
                     file_path = item["source"]
                     file_name = os.path.splitext(os.path.basename(file_path))[0]
                     item["title"] = file_name
+                    if "duration" in item:
+                        total_seconds = int(item["duration"])
+                        hours = total_seconds // 3600
+                        minutes = (total_seconds % 3600) // 60
+                        seconds = total_seconds % 60
+                        
+                        if hours > 0:
+                            item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        else:
+                            item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
             
             return render_template('modules/playlist.html', playlist=items)
             
@@ -351,7 +366,26 @@ def webserver():
     @app.route('/playout', methods=['GET', 'POST'])
     @flask_login.login_required
     def playout_page():
-        return render_template('playout.html', media=getinfo_current_media())
+        medias_list = []
+        try:
+            with sqlite3.connect("databases/medias.db") as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM media")
+                medias_list = cursor.fetchall()
+        except Exception as e:
+            print(f"Error while reading media database : {e}")
+
+        return render_template('playout.html', media=getinfo_current_media(), medias=medias_list)
+
+    @app.route('/media/scan', methods=['POST'])
+    @flask_login.login_required
+    def scan_media():
+        try:
+            media_agent()
+            return jsonify({"success": True, "message": "Media database successfully loaded"})
+        except Exception as e:
+            return jsonify({"success": "false", "error": str(e)}), 500
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

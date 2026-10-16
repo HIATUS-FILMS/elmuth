@@ -1,0 +1,56 @@
+<section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+
+    <div class="gap-2 p-0 flex mb-1.5">
+        <div class="w-1/2">
+            <p class="block mb-1 text-sm font-medium text-heading">Media asset management</p>
+        </div>  
+        <div class="w-1/2">
+            <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.776a3 3 0 0 0 2.121 2.122C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.122C21 18.396 21 17.93 21 17m-4.5-9.5S13.186 3 12 3S7.5 7.5 7.5 7.5M12 4v12" />
+                </svg>
+                <span>Upload</span>
+            </button>
+        </div>             
+    </div>
+
+    <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0 py-2">
+        <div class="gap-2 p-0 flex mb-1.5">
+            <div class="w-1/2">
+                <label for="search-name" class="block mb-1 text-sm font-medium text-heading">Search media</label>
+                <input id="search-name" name="search_name" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="Media name">  
+            </div>  
+            <div class="w-1/2">
+                <label for="search-season" class="block mb-1 text-sm font-medium text-heading">Season</label>
+                <input id="search-season" name="search_season" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="2026">  
+            </div>             
+        </div>
+
+        <div class="gap-2 p-0 flex mb-1.5">
+            <div class="w-1/2">
+                <label for="search-type" class="block mb-1 text-sm font-medium text-heading">Type</label>
+                <input id="search-type" name="search_type" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="CLIP">  
+            </div>  
+            <div class="w-1/2">
+                <label for="search-family" class="block mb-1 text-sm font-medium text-heading">Family</label>
+                <input id="search-family" name="search_family" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="TOP">  
+            </div>             
+        </div>
+    </form>
+
+    <div id="media-list" class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
+        {% for m in medias %}
+        <div class="p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer transition">
+            <p class="text-slate-300 font-medium">{{ m.filename }} {% if m.season %}({{ m.season }}){% endif %}</p>
+            <span class="text-[10px] text-slate-500">Type : {{ m.type or 'N/A' }} / Family : {{ m.fam or 'N/A' }} / Length : {{ m.length or '00:00' }}<br></span>
+            <span class="text-[10px] text-slate-500">{{ m.description or 'Description example...' }}<br></span>
+            <span class="text-[10px] text-slate-500">First aired : {{ m.first_aired or 'XX/XX/20XX' }} / Last aired : {{ m.last_aired or 'XX/XX/20XX' }}</span>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-slate-600">
+            Sorry, no media was found.
+        </div>
+        {% endfor %}
+    </div>
+</section>

@@ -38,36 +38,71 @@ def init_db():
     connect.commit()
     connect.close()
 
-def write_db(name, path):
+def write_db(name, path, length):
 
     try:
         with connect_db() as authdb:
             cursor_auth = authdb.cursor()
-            cursor_auth.execute(("INSERT OR IGNORE INTO media (filename, filepath) values (?, ?)"), (name, path))
+            cursor_auth.execute(("INSERT OR IGNORE INTO media (filename, filepath, length) values (?, ?, ?)"), (name, path, length))
             authdb.commit()
     except Exception as e:
         print(f"An error occured while creating the table:{e}")
 
-
-def media_agent():
-
+def get_data(source_path):
     headers = ffheaders()
-
+    headers['Content-Type'] = 'application/json'
+    
     url = readaddress() + '/api/file/' + readid() + '/browse'
-    getinfo = requests.post(url, headers=headers)
-    print(getinfo.status_code)
+    
+    payload = {
+        "source": source_path,
+        "folders_only": False
+    }
+    
+    data = requests.post(url, headers=headers, data=json.dumps(payload))
+    
+    if data.status_code == 200:
+        return data.json()
+    else:
+        print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] API error {data.status_code} for the path {source_path}" + bcolors.ENDC)
+        return {}
 
+def media_agent(path_current=""):
+    call_api = get_data(path_current)
 
+    files = call_api.get("files", [])
+    folders = call_api.get("folders", [])
 
-    if getinfo.status_code == 200:
+    for file in files:
+        name = file.get("name")
 
-        data = getinfo.json()
+        if name.endswith((".mp4", ".mkv", ".avi")):
+            print(bcolors.OKBLUE + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} has been found in {path_current}" + bcolors.ENDC)
 
-        files = data.get("files", [])
+            duration_sec = file.get("duration", 0)
 
-        for file in files:
-            name = file.get("name")
-            path = file.get("path")
-            print(bcolors.OKBLUE + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} has been found in {path}" + bcolors.ENDC)
-            write_db(name, path)
-        return getinfo.json()
+            total_seconds = int(duration_sec)
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+            
+            if hours > 0:
+                length_formatted = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            else:
+                length_formatted = f"{minutes:02d}:{seconds:02d}"
+
+            write_db(name, path_current, length_formatted)
+
+        else:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} is not compatible (Wrong file extension)" + bcolors.ENDC)
+
+    for folder in folders:
+        if path_current:
+            path_new = f"{path_current}/{folder}"
+        
+        else:
+            path_new = folder
+
+        print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] Scanning {path_new}" + bcolors.ENDC)
+
+        media_agent(path_new)
