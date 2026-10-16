@@ -55,7 +55,7 @@ Roadmap (For v1.0)
 
 * Software base
 - [x] Config file & database support
-- [ ] Media scan
+- [x] Media scan
 - [ ] Playlist generator
 
 * WebUI
