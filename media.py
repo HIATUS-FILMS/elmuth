@@ -6,7 +6,7 @@ import datetime
 import json
 import requests
 from bcolors import bcolors
-from ffplayout import get_access_token, get_new_access_token, ffplayout_token, pass_decrypt, readid, readaddress, read_db
+from ffplayout import get_access_token, get_new_access_token, ffplayout_token, pass_decrypt, readid, readaddress, ffheaders
 
 
 
@@ -40,29 +40,18 @@ def init_db():
 
 def write_db(name, path):
 
-    with open('settings/config.json', 'r', encoding='utf-8') as db_scan:
-        db_read = json.load(db_scan)
-
-    os.makedirs('databases', exist_ok=True)
-    authdb = sqlite3.connect(db)
-    print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The database media was successfully loaded" + bcolors.ENDC)
-
     try:
-        with authdb:
+        with connect_db() as authdb:
             cursor_auth = authdb.cursor()
             cursor_auth.execute(("INSERT OR IGNORE INTO media (filename, filepath) values (?, ?)"), (name, path))
             authdb.commit()
     except Exception as e:
         print(f"An error occured while creating the table:{e}")
 
-    authdb.close()
 
 def media_agent():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/file/' + readid() + '/browse'
     getinfo = requests.post(url, headers=headers)

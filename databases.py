@@ -5,14 +5,14 @@ import os
 import datetime
 import json
 from bcolors import bcolors
+from config import config_soft
 
 def init_db():
 
-    with open('settings/config.json', 'r', encoding='utf-8') as db_scan:
-        db_read = json.load(db_scan)
+    config = config_soft()
 
     os.makedirs('databases', exist_ok=True)
-    auth_path = db_read["db"]["auth_path"]
+    auth_path = config["db"]["auth_path"]
     authdb = sqlite3.connect(auth_path)
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The database was successfully loaded" + bcolors.ENDC)
 
@@ -41,3 +41,11 @@ def init_db():
     except Exception as e:
         print(f"An error occured while creating the table:{e}")
     authdb.close()
+
+def db_connect():
+    config = config_soft()
+    auth_path = config["db"]["auth_path"]
+    os.makedirs(os.path.dirname(auth_path), exist_ok=True)
+    conn = sqlite3.connect(auth_path)
+    conn.row_factory = sqlite3.Row
+    return conn

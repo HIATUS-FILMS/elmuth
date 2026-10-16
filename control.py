@@ -9,7 +9,9 @@ import sqlite3
 import json
 from cryptography.fernet import Fernet
 import requests
-from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next, get_access_token, readaddress, readid
+from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next, get_access_token, readaddress, readid, ffheaders
+from databases import db_connect
+from config import config_soft
 
 app = Flask(__name__)
 
@@ -26,47 +28,44 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(username):
 
-    with open('settings/config.json', 'r', encoding='utf-8') as f:
-        config = json.load(f)
-    
-    auth_path = config["db"]["auth_path"]
-    authdb = sqlite3.connect(auth_path)
-    cursor = authdb.cursor()
+    with db_connect() as authdb:
 
-    cursor.execute("SELECT username FROM el_credentials WHERE username = ?", (username,))
-    result = cursor.fetchone()
-    authdb.close()
+        cursor = authdb.cursor()
+        cursor.execute("SELECT username FROM el_credentials WHERE username = ?", (username,))
+        result = cursor.fetchone()
 
-    if result:
-        return User(result[0])
+        if result:
+            return User(result["username"])
 
-    return None
+        return None
 
 def setup_status():
-    os.makedirs('databases', exist_ok=True) #verify if the folder exists
-    db_path = 'databases/auth.db' #defines the auth.db path
+    config = config_soft()
+    db_path = config["db"]["auth_path"]
 
     if not os.path.exists(db_path) or os.path.getsize(db_path) == 0: #file does not exists or 0b in size
             return False
 
     try:
-        authdb = sqlite3.connect(db_path)
-        cursor = authdb.cursor()
+        with db_connect() as authdb:
+            cursor = authdb.cursor()
 
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='el_credentials';")
-        if not cursor.fetchone():
-            authdb.close()
-            return False
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='el_credentials';")
+            if not cursor.fetchone():
+                return False
 
-        cursor.execute("SELECT COUNT(*) FROM el_credentials")
-        count = cursor.fetchone()[0]
-        authdb.close()
+            cursor.execute("SELECT COUNT(*) FROM el_credentials")
+            count = cursor.fetchone()[0]
 
-        if count == 0:
-            return False
+            if count == 0:
+                return False
 
     except Exception:
         return False
+
+    finally:
+        if authdb:
+            authdb.close()
 
     return True
 
@@ -89,30 +88,14 @@ def webserver():
             elpassword_hashed = generate_password_hash(elpassword_plain, method="pbkdf2:sha256")
 
             def write_db():
-
-                with open('settings/config.json', 'r', encoding='utf-8') as db_scan:
-                    db_read = json.load(db_scan)
-
-                os.makedirs('databases', exist_ok=True)
-                auth_path = db_read["db"]["auth_path"]
-                authdb = sqlite3.connect(auth_path)
-                print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The database was successfully loaded" + bcolors.ENDC)
-
                 try:
-                    with authdb:
+                    with db_connect() as authdb:
                         cursor_auth = authdb.cursor()
-                        cursor_auth.execute(("INSERT INTO el_ffplayout (username, password) values (?, ?)"), (ffuser, ffpassword_hashed))
-                        authdb.commit()
+                        cursor_auth.execute("INSERT INTO el_ffplayout (username, password) values (?, ?)", (ffuser, ffpassword_hashed))
+                        cursor_auth.execute("INSERT INTO el_credentials (username, password) values (?, ?)", (eluser, elpassword_hashed))
+                        print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] Database entries successfully written" + bcolors.ENDC)
                 except Exception as e:
-                    print(f"An error occured while creating the table:{e}")
-
-                try:
-                    with authdb:
-                        cursor_auth = authdb.cursor()
-                        cursor_auth.execute(("INSERT INTO el_credentials (username, password) values (?, ?)"), (eluser, elpassword_hashed))
-                        authdb.commit()
-                except Exception as e:
-                    print(f"An error occured while creating the table:{e}")
+                    print(f"An error occurred while writing to db: {e}")
                 authdb.close()
             write_db()
             with open('settings/config.json', 'r+') as f:
@@ -132,29 +115,21 @@ def webserver():
             loginpassword = request.form['loginpassword']
 
             def read_db():
+                try:
+                    with db_connect() as authdb:
+                        cursor_auth = authdb.cursor()
+                        cursor_auth.execute("SELECT password FROM el_credentials WHERE username = ?", (loginuser,))
+                        result = cursor_auth.fetchone()
 
-                with open('settings/config.json', 'r', encoding='utf-8') as db_scan:
-                    db_read = json.load(db_scan)
+                    if result is None:
+                        return False
 
-                os.makedirs('databases', exist_ok=True)
-                auth_path = db_read["db"]["auth_path"]
-                authdb = sqlite3.connect(auth_path)
-                print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The database was successfully loaded" + bcolors.ENDC)
+                    password_hash = result["password"] if isinstance(result, sqlite3.Row) else result[0]
+                    return check_password_hash(password_hash, loginpassword)
 
-                
-                with authdb:
-                    cursor_auth = authdb.cursor()
-                    cursor_auth.execute("SELECT password FROM el_credentials WHERE username = ?", (loginuser,))
-                    authdb.commit()
-
-                result = cursor_auth.fetchone()
-                authdb.close()
-
-                if result is None:
+                except Exception as e:
+                    print(f"Login error: {e}")
                     return False
-
-                check_pass = check_password_hash(result[0], loginpassword)
-                return check_pass
 
             check_pass = read_db()
             if check_pass == True:
@@ -265,8 +240,6 @@ def webserver():
 
         return f'<div class="bg-emerald-500 h-full transition-all duration-500" style="width: {progress}%;" hx-get="/dashboard/status/progress" hx-trigger="every 0.5s" hx-swap="outerHTML"></div>'
 
-#oh god, the playlist part was a nightmare and is still full of bugs...
-
     @app.route('/dashboard/running')
     @flask_login.login_required
     def dashboard_running():
@@ -325,10 +298,7 @@ def webserver():
     @flask_login.login_required
     def dashboard_form():
 
-        headers = {
-            'Authorization': f'Bearer {get_access_token()}',
-            'Content-Type': 'application/json',
-            }
+        headers = ffheaders()
 
         if request.method == 'POST':
             message = request.form.get('message', '')
