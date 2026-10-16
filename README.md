@@ -12,11 +12,6 @@ Originally conceived for a French WebTV project, the project aims to follow a ro
 
 ![Project](http://www.image-heberg.fr/files/1790018688165833045.png)
 
-Is AI accepted in code ?
--------------------
-
-Currently, the use of AI is not permitted for designing critical parts of the code. These tools are only allowed during the debugging phase. This measure has been taken to avoid any issues related to code that is not understood or is copyrighted, as well as security concerns.
-
 What is the current status of elmuth's development?
 -------------------
 
@@ -24,6 +19,10 @@ The project is still in its early stages, and the first pre-alpha versions shoul
 
 Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, CSS and Javascript code.
 
+Is AI accepted in code ?
+-------------------
+
+Currently, the use of AI is not permitted for designing critical parts of the code. These tools are only allowed during the debugging phase. This measure has been taken to avoid any issues related to code that is not understood or is copyrighted, as well as security concerns.
 
 License
 -------------------
