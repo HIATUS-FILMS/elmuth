@@ -33,6 +33,7 @@ elmuth uses the following third party libraries :
 
 * Tailwind CSS                   (MIT License)
 * Flask               3.1.3      (BSD-3-Clause)
+* Flask-Login         0.6.3      (MIT License)
 * Jinja2              3.1.6      (BSD License)
 * MarkupSafe          3.0.3      (BSD-3-Clause)
 * Werkzeug            3.1.8      (BSD-3-Clause)
@@ -48,7 +49,7 @@ elmuth uses the following third party libraries :
 * requests            2.34.2     (Apache Software License)
 * urllib3             2.8.0      (MIT)
   
-*Software license list by pip-licenses 5.5.5*
+*Software license list by pip-licenses 5.5.5 (MIT License)*
 
 Roadmap (For v1.0)
 -------------------
