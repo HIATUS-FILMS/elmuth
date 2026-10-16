@@ -14,26 +14,18 @@ import time
 cached_token = None
 token_expiration_time = None
 
-def readaddress():
+def readconfig():
     with open('settings/config.json', 'r', encoding='utf-8') as config_scan:
-        config_read = json.load(config_scan)
+        return json.load(config_scan)
 
-        ffaddress_path = config_read["ffplayout"]["base_url"]
-    return ffaddress_path
+def readaddress():
+    return readconfig()["ffplayout"]["base_url"]
 
 def readkey():
-    with open('settings/config.json', 'r', encoding='utf-8') as config_scan:
-        config_read = json.load(config_scan)
-
-        private_key = config_read["ffplayout"]["private_key"]
-    return private_key
+    return readconfig()["ffplayout"]["private_key"]
 
 def readid():
-    with open('settings/config.json', 'r', encoding='utf-8') as config_scan:
-        config_read = json.load(config_scan)
-
-        channel_id = config_read["ffplayout"]["channel_id"]
-    return channel_id
+    return readconfig()["ffplayout"]["channel_id"]
 
 def read_db():
 
@@ -95,12 +87,15 @@ def get_access_token():
         return cached_token
     return get_new_access_token()
 
-def getinfo_current_media():
-
-    headers = {
+def ffheaders():
+    return {
         'Authorization': f'Bearer {get_access_token()}',
         'Content-Type': 'application/json',
-        }
+    }
+
+def getinfo_current_media():
+
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/media/current'
     getinfo = requests.get(url, headers=headers)
@@ -110,10 +105,7 @@ def getinfo_current_media():
 
 def getinfo_current_playlist():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     today = datetime.date.today().strftime('%Y-%m-%d')
     url = readaddress() + '/api/playlist/' + readid() + '?date=' + today
@@ -122,12 +114,9 @@ def getinfo_current_playlist():
     if getinfo.status_code == 200:
         return getinfo.json()
 
-def sendinfo_overlay(): #not working rn, will fix that later
+def sendinfo_overlay():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/text'
     sendinfo = requests.post(url, headers=headers)
@@ -137,10 +126,7 @@ def sendinfo_overlay(): #not working rn, will fix that later
 
 def sendinfo_prev():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/playout'
     data = {
@@ -153,10 +139,7 @@ def sendinfo_prev():
 
 def sendinfo_play():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/process'
     data = {
@@ -169,10 +152,7 @@ def sendinfo_play():
 
 def sendinfo_stop():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/process'
     data = {
@@ -185,10 +165,7 @@ def sendinfo_stop():
 
 def sendinfo_next():
 
-    headers = {
-        'Authorization': f'Bearer {get_access_token()}',
-        'Content-Type': 'application/json',
-        }
+    headers = ffheaders()
 
     url = readaddress() + '/api/control/' + readid() + '/playout'
     data = {
