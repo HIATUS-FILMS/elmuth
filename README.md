@@ -24,6 +24,8 @@ Is AI accepted in code ?
 
 Currently, the use of AI is not permitted for designing critical parts of the code. These tools are only allowed during the debugging phase. This measure has been taken to avoid any issues related to code that is not understood or is copyrighted, as well as security concerns.
 
+If you need to use it to fix bugs or resolve an issue, we recommend using local AI whenever possible in this context.
+
 License
 -------------------
 elmuth is distributed under the GNU General Public License GPLv3, see LICENSE file for details.
