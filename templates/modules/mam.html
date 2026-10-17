@@ -15,42 +15,43 @@
         </div>             
     </div>
 
-    <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0 py-2">
+    <form class="w-full space-y-0 py-2">
         <div class="gap-2 p-0 flex mb-1.5">
             <div class="w-1/2">
-                <label for="search-name" class="block mb-1 text-sm font-medium text-heading">Search media</label>
-                <input id="search-name" name="search_name" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="Media name">  
+                <label for="search-name" class="block mb-1 text-sm font-medium text-heading">Search name</label>
+                <input id="search-name" name="search_name" 
+                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       type="text" placeholder="Media name"
+                       hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>  
             <div class="w-1/2">
                 <label for="search-season" class="block mb-1 text-sm font-medium text-heading">Season</label>
-                <input id="search-season" name="search_season" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="2026">  
+                <input id="search-season" name="search_season" 
+                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       type="text" placeholder="2026"
+                       hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>             
         </div>
 
         <div class="gap-2 p-0 flex mb-1.5">
             <div class="w-1/2">
                 <label for="search-type" class="block mb-1 text-sm font-medium text-heading">Type</label>
-                <input id="search-type" name="search_type" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="CLIP">  
+                <input id="search-type" name="search_type" 
+                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       type="text" placeholder="CLIP"
+                       hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>  
             <div class="w-1/2">
                 <label for="search-family" class="block mb-1 text-sm font-medium text-heading">Family</label>
-                <input id="search-family" name="search_family" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="TOP">  
+                <input id="search-family" name="search_family" 
+                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       type="text" placeholder="TOP"
+                       hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>             
         </div>
     </form>
 
     <div id="media-list" class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
-        {% for m in medias %}
-        <div class="p-2.5 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 cursor-pointer transition">
-            <p class="text-slate-300 font-medium">{{ m.filename }} {% if m.season %}({{ m.season }}){% endif %}</p>
-            <span class="text-[10px] text-slate-500">Type : {{ m.type or 'N/A' }} / Family : {{ m.fam or 'N/A' }} / Length : {{ m.length or '00:00' }}<br></span>
-            <span class="text-[10px] text-slate-500">{{ m.description or 'Description example...' }}<br></span>
-            <span class="text-[10px] text-slate-500">First aired : {{ m.first_aired or 'XX/XX/20XX' }} / Last aired : {{ m.last_aired or 'XX/XX/20XX' }}</span>
-        </div>
-        {% else %}
-        <div class="p-4 text-center text-slate-600">
-            Sorry, no media was found.
-        </div>
-        {% endfor %}
+        {% include "modules/mam_items.html" %}
     </div>
 </section>

@@ -387,6 +387,42 @@ def webserver():
         except Exception as e:
             return jsonify({"success": "false", "error": str(e)}), 500
 
+    @app.route('/playout/filter')
+    @flask_login.login_required
+    def playout_filter():
+        name_q = request.args.get('search_name', '').strip()
+        season_q = request.args.get('search_season', '').strip()
+        type_q = request.args.get('search_type', '').strip()
+        family_q = request.args.get('search_family', '').strip()
+
+        query = "SELECT * FROM media WHERE 1=1"
+        params = []
+
+        if name_q:
+            query += " AND filename LIKE ?"
+            params.append(f"%{name_q}%")
+        if season_q:
+            query += " AND season LIKE ?"
+            params.append(f"%{season_q}%")
+        if type_q:
+            query += " AND type LIKE ?"
+            params.append(f"%{type_q}%")
+        if family_q:
+            query += " AND fam LIKE ?"
+            params.append(f"%{family_q}%")
+
+        medias_list = []
+        try:
+            with sqlite3.connect("databases/medias.db") as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+                cursor.execute(query, params)
+                medias_list = cursor.fetchall()
+        except Exception as e:
+            print(f"Error while filtering media database : {e}")
+
+        return render_template('modules/mam_items.html', medias=medias_list)
+
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)
 
