@@ -18,13 +18,16 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
         <div class="px-6 py-4 flex flex-col items-center">
             <img class="h-10 object-cover ..." src="static/img/logo.png">
         </div>
-        <div class="mx-auto flex max-w-sm items-center gap-x-4 rounded-full bg-white p-0 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+        <div class="mx-auto flex max-w-lg items-center gap-x-4 rounded-full bg-white p-0 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
             <ul class="flex">
                 <li class="flex-1 mr-2">
                     <a class="block py-1 px-4 text-gray-400 hover:bg-gray-900 rounded-full" href="/dashboard">Broadcast</a>
                 </li>
                 <li class="flex-1 mr-2">
                     <a class="text-center block border border-gray-500 rounded-full py-1 px-4 bg-gray-900 hover:bg-transparent text-gray-200" href="/playout">Playout</a>
+                </li>
+                <li class="flex-1 mr-2">
+                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Templates</a>
                 </li>
                 <li class="flex-1 mr-2">
                     <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Settings</a>
@@ -52,95 +55,193 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
         
 {% include "modules/mam.html" %}
 
-        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
+        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/6">
-                    <p class="block mb-1 text-sm font-medium text-heading">Diffusion - XX/XX/20XX</p>
+                    <p class="block mb-1 text-sm font-medium text-heading" id="diffusion-header">
+                        Diffusion - {{ selected_date or 'XX/XX/20XX' }}
+                    </p>
                 </div>
                 <div class="w-1/6">
-                    <input id="x-axis" name="x_axis" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="Date">
+                    <input id="playlist-date" name="playlist_date" 
+                    value="{{ selected_date }}"
+                    class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                    type="date"
+                    hx-get="/playout/playlist_load" 
+                    hx-target="#playlist-container" 
+                    hx-trigger="change">
                 </div>    
                 <div class="w-1/6">
-                    <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M0 0h24v24H0z" fill="none" />
-                            <g fill="none">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 4h18" />
-                                <path fill="currentColor" fill-rule="evenodd" d="M19 4H5v11.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874C6.52 19 7.08 19 8.2 19h7.6c1.12 0 1.68 0 2.108-.218a2 2 0 0 0 .874-.874C19 17.48 19 16.92 19 15.8zm-8 11v-3.586l-1.293 1.293a1 1 0 0 1-1.414-1.414l2.894-2.894q.027-.027.057-.053a.998.998 0 0 1 1.512 0q.03.026.057.053l2.894 2.894a1 1 0 0 1-1.414 1.414L13 11.414V15a1 1 0 1 1-2 0" clip-rule="evenodd" />
-                            </g>
+                    <button hx-post="/playout/playlist_save_all" hx-include="#playlist-date" hx-on::after-request="window.location.reload()" class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12l6 6L20 6" />
                         </svg>
+                        <span>Apply</span>
+                    </button>
+                </div>
+                <div class="w-1/6">
+                    <button class="flex rounded-full bg-red-950/60 border border-red-900/50 hover:bg-red-900 text-red-400 border font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                        <svg class="mr-2 w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Del item</span>
                     </button>
                 </div>
                 <div class="w-1/6">
                     <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                            <path d="M0 0h32v32H0z" fill="none" />
-                            <path fill="currentColor" d="M11.5 12A2.5 2.5 0 0 1 9 9.5V3H7.5A4.5 4.5 0 0 0 3 7.5v17a4.5 4.5 0 0 0 4 4.473V18.5A2.5 2.5 0 0 1 9.5 16h13a2.5 2.5 0 0 1 2.5 2.5v10.473a4.5 4.5 0 0 0 4-4.473V10.45a4.5 4.5 0 0 0-1.318-3.182l-2.95-2.95A4.5 4.5 0 0 0 22 3.023V9.5a2.5 2.5 0 0 1-2.5 2.5zM20 3h-9v6.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5zm3 26H9V18.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5z" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="w-1/6">
-                    <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
                             <path d="M0 0h14v14H0z" fill="none" />
                             <path fill="currentColor" fill-rule="evenodd" d="M7.106.087a.75.75 0 0 1 .413.977L4.8 7.779c.354.124.714.312 1.03.564c.55.439.998 1.1.998 1.979c0 .535.131.98.33 1.344c.318.584 1.016.793 1.682.793a.75.75 0 0 1 0 1.5h-.09v.01H2.251c-1.048 0-2.154-.701-2.182-1.925c-.023-1.026.195-2.193.815-3.084c.52-.747 1.303-1.27 2.368-1.361L6.13.5a.75.75 0 0 1 .977-.413m6.075 13.872a.75.75 0 0 0 0-1.5h-1.927a.75.75 0 1 0 0 1.5zm-.142-3.472a.75.75 0 0 1-.75.75h-1.916a.75.75 0 1 1 0-1.5h1.916a.75.75 0 0 1 .75.75m-1.785-2.073a.75.75 0 0 0 0-1.5H9.338a.75.75 0 1 0 0 1.5z" clip-rule="evenodd" />
                         </svg>
+                        <span>Clear</span>
                     </button>
                 </div>
                 <div class="w-1/6">
                     <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M0 0h24v24H0z" fill="none" />
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.777a3 3 0 0 0 2.121 2.121C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C21 18.395 21 17.93 21 17m-4.5-5.5S13.186 16 12 16s-4.5-4.5-4.5-4.5M12 15V3" />
                         </svg>
+                        <span>Download</span>
                     </button>
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden mt-3">
-                <table class="w-full text-center border-collapse table-auto">
-                    <thead>
-                        <tr>
-                            <th class="py-2">Playlist</th>
-                            <th class="py-2">Airing time</th>
-                            <th class="py-2">Program name</th>
-                            <th class="py-2">Length</th>
-                            <th class="py-2">Type</th>
-                            <th class="py-2">Family</th>
-                            <th class="py-2">Description</th>
-                            <th class="py-2">Problem(s)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="hover:bg-slate-800/30 transition-colors cursor-pointer">
-                            <td class="py-2">2026_04_10</td>
-                            <td class="py-2">04/10/2026 16:36:53</td>
-                            <td class="py-2">Example</td>
-                            <td class="py-2">05:33:53</td>
-                            <td class="py-2">MAG</td>
-                            <td class="py-2">FM</td>
-                            <td class="py-2">Description example</td>
-                            <td class="py-2">Missing media</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-y-auto mt-3" id="playlist-container">
+                {% include "modules/playlist_table.html" %}
             </div>
         </section>
 
-        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between max-h-fit">
-            <div class="gap-2 p-0 flex mb-1.5">
-                <div class="w-1/2">
-                    <p class="block mb-1 text-sm font-medium text-heading">Ffmpeg convert</p>
-                </div>  
-                <div class="w-1/2">
-
-                </div>             
+        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px] overflow-y-auto">
+            
+            <div>
+                <p class="block mb-1 text-sm font-medium text-heading" id="diffusion-header">Inspector</p>
             </div>
+
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                <p class="text-sm font-medium text-heading mb-1">Playlist tools</p>
+                
+                <div class="flex items-center justify-between gap-2">
+                    <label for="copy-date" class="block mb-1 text-sm font-medium text-heading">Copy from another date</label>
+                    <input type="date" id="copy-date" name="copy_date" class="py-1.5 w-32 bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner" type="text" placeholder="09/10/2026">
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                    <label for="template-select" class="block mb-1 text-sm font-medium text-heading">Generate from template</label>
+                    <select id="template-select" class="py-1.5 w-32 bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner">
+                        <option value="">-- Blank --</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2 mt-2">
+                    <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 28 28">
+                            <path d="M0 0h28v28H0z" fill="none" />
+                            <path fill="currentColor" d="M5.99 3a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2h-1.995a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm9.08 3.543l3.86 15.483a2 2 0 0 1-1.457 2.425l-1.963.49a2 2 0 0 1-2.424-1.458L16.226 8a2 2 0 0 1 1.456-2.425l1.963-.489a2 2 0 0 1 2.425 1.457" />
+                        </svg>
+                        <span>Template page</span>
+                    </button>
+                    <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12l6 6L20 6" />
+                        </svg>
+                        <span>Apply</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                <p class="text-sm font-medium text-heading mb-1">[Selected media name]</p>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">Name</label>
+                    <input class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner" type="text">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">Type</label>
+                    <select class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner">
+                        <option>---</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">Family</label>
+                    <select class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner">
+                        <option>--</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">Description</label>
+                    <textarea class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner resize-none h-16"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">First aired</label>
+                    <input type="date" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner" type="text">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="block mb-1 text-sm font-medium text-heading">Last aired</label>
+                    <input type="date" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl px-2 text-xs text-gray-300 focus:outline-none focus:border-slate-600 shadow-inner" type="text">
+                </div>
+
+                <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path fill="currentColor" d="M7.25 7.6c0 .966.784 1.75 1.75 1.75h6a1.75 1.75 0 0 0 1.75-1.75V4.276c0-.152.124-.276.276-.276a.5.5 0 0 1 .38.174l2.963 3.455a2.5 2.5 0 0 1 .6 1.725l-.342 8.744A2.5 2.5 0 0 1 18.13 20.5h-.379a.5.5 0 0 1-.5-.5v-5a1.75 1.75 0 0 0-1.75-1.75h-7A1.75 1.75 0 0 0 6.75 15v5a.5.5 0 0 1-.5.5h-.137a2.39 2.39 0 0 1-2.373-2.089a47.8 47.8 0 0 1-.063-11.625l.06-.52A2.564 2.564 0 0 1 6.284 4h.466a.5.5 0 0 1 .5.5z" />
+                        <path fill="currentColor" d="M8.25 20a.5.5 0 0 0 .5.5h6.5a.5.5 0 0 0 .5-.5v-5a.25.25 0 0 0-.25-.25h-7a.25.25 0 0 0-.25.25zm7-15.5a.5.5 0 0 0-.5-.5h-5.5a.5.5 0 0 0-.5.5v3.1c0 .138.112.25.25.25h6a.25.25 0 0 0 .25-.25z" />
+                    </svg>
+                    <span>Save</span>
+                </button>
+            </div>
+
         </section>
 
     </main>
 
 </div>
-
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const playlistTbody = document.querySelector("#playlist-container tbody");
+    if (playlistTbody) {
+        new Sortable(playlistTbody, {
+            animation: 150,
+            ghostClass: 'bg-slate-800/50',
+            onEnd: function (evt) {
+                const selectedDate = document.getElementById("playlist-date").value;
+                const rows = playlistTbody.querySelectorAll("tr[data-source]");
+                const newItems = Array.from(rows).map(row => ({
+                    source: row.getAttribute("data-source"),
+                    title: row.getAttribute("data-title")
+                }));
+
+                fetch("/playout/playlist_edit", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        date: selectedDate,
+                        items: newItems
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        htmx.ajax('GET', `/playout/playlist_load?playlist_date=${selectedDate}`, {target: '#playlist-container'});
+                    }
+                })
+                .catch(error => {
+                    console.error("Error while reordering:", error);
+                });
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

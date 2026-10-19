@@ -13,6 +13,7 @@ from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_
 from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
+from planifier import playlist_register
 
 app = Flask(__name__)
 
@@ -75,6 +76,7 @@ def webserver():
 
     init_db()
     media_agent()
+    playlist_register(app)
 
     @app.route('/setup', methods=['GET', 'POST'])
     def setup_page():
@@ -366,6 +368,31 @@ def webserver():
     @app.route('/playout', methods=['GET', 'POST'])
     @flask_login.login_required
     def playout_page():
+        selected_date = request.args.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
+        
+        headers = ffheaders()
+        url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
+        
+        playlist_items = []
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                playlist_items = data.get("program", [])
+
+            for item in playlist_items:
+                if "duration" in item:
+                    total_seconds = int(item["duration"])
+                    hours = total_seconds // 3600
+                    minutes = (total_seconds % 3600) // 60
+                    seconds = total_seconds % 60
+                    if hours > 0:
+                        item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                    else:
+                        item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
+        except Exception as e:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {select_date} : {e}" + bcolors.ENDC)
+
         medias_list = []
         try:
             with sqlite3.connect("databases/medias.db") as conn:
@@ -376,7 +403,11 @@ def webserver():
         except Exception as e:
             print(f"Error while reading media database : {e}")
 
-        return render_template('playout.html', media=getinfo_current_media(), medias=medias_list)
+        return render_template('playout.html', 
+                               media=getinfo_current_media(), 
+                               medias=medias_list, 
+                               playlist=playlist_items, 
+                               selected_date=selected_date)
 
     @app.route('/media/scan', methods=['POST'])
     @flask_login.login_required
