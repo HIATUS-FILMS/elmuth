@@ -7,6 +7,7 @@ from flask import render_template, request, jsonify, session
 from ffplayout import readaddress, readid, ffheaders
 import flask_login
 from media import connect_db
+from markupsafe import escape
 
 STORAGE_ROOT = "/var/lib/ffplayout/tv-media"
 
@@ -203,3 +204,71 @@ def playlist_register(app):
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+    
+    @app.route('/playout/inspect', methods=['GET'])
+    @flask_login.login_required
+    def playout_inspect():
+        name = request.args.get("name", "")
+        inspect_name = escape(name)
+        return inspect_name
+
+    @app.route('/playout/playlist_draft_delete', methods=['POST'])
+    @flask_login.login_required
+    def playlist_draft_delete():
+        print("DEBUG delete form :", dict(request.form))
+        
+        selected_date = request.form.get("playlist_date")
+        selected = request.form.get("selected", "")
+        
+        #checking if we detele a playlist item properly
+        if not selected.startswith("playlist:"):
+            return "", 204
+
+        #split the string to get index number
+        split_select = selected.split(":")
+        index = int(split_select[1])
+
+        #fetching items from ffplayout api first
+        api_items = []
+        headers = ffheaders()
+        url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            api_items = response.json().get("program", [])
+
+        #get session drafts
+        drafts = session.get('draft_playlist', [])
+
+        #if index is bigger than api items length,it is in the session draft
+        if index >= len(api_items):
+            draft_index = index - len(api_items)
+            if 0 <= draft_index < len(drafts):
+                drafts.pop(draft_index)
+                session['draft_playlist'] = drafts
+                session.modified = True
+        else:
+            #else, it is in the real api playlist, and we remove it there
+            api_items.pop(index)
+            playlist_data = {
+                "date": selected_date,
+                "program": api_items
+            }
+            url_post = f"{readaddress()}/api/playlist/{readid()}"
+            requests.post(url_post, headers=headers, json=playlist_data)
+
+        #mergeing everything
+        full_items = api_items + session.get('draft_playlist', [])
+        
+        #recalculata durations like everywhere else
+        for item in full_items:
+            if "duration" in item:
+                total_seconds = int(item["duration"])
+                hours = total_seconds // 3600
+                minutes = (total_seconds % 3600) // 60
+                seconds = total_seconds % 60
+                if hours > 0:
+                    item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                else:
+                    item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
+            
+        return render_template('modules/playlist_table.html', playlist=full_items, select_date=selected_date)
