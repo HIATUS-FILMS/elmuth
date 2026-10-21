@@ -74,8 +74,10 @@ def setup_status():
 
 def webserver():
 
-    init_db()
-    media_agent()
+    if setup_status():
+        init_db()
+        media_agent()
+
     playlist_register(app)
 
     @app.route('/setup', methods=['GET', 'POST'])
