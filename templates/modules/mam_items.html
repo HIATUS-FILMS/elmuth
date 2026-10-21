@@ -1,15 +1,20 @@
 {% for m in medias %}
-<div class="p-3 rounded-xl bg-slate-800/40 border border-slate-800/50 hover:border-slate-700 transition flex items-center justify-between gap-4 group" data-source="{{ m.filename }}">
-    
-    <div class="flex flex-col text-xs text-slate-400 overflow-hidden">
-        <p class="text-slate-300 font-medium truncate">{{ m.filename }} {% if m.season %}({{ m.season }}){% endif %}</p>
-        <span class="text-[10px] text-slate-500">Type : {{ m.type or 'N/A' }} / Family : {{ m.fam or 'N/A' }} / Length : {{ m.length or '00:00' }}</span>
-        <span class="text-[10px] text-slate-500 truncate">{{ m.description or '...' }}</span>
-        <span class="text-[10px] text-slate-500">First aired : {{ m.first_aired or 'XX/XX/20XX' }} / Last aired : {{ m.last_aired or 'XX/XX/20XX' }}</span>
+<label class="p-3 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 transition flex items-center justify-between gap-4 group cursor-pointer has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400" data-source="{{ m.filename }}">
+
+    <input type="radio" name="selected" value="mam" class="sr-only"
+       hx-get="/playout/inspect?name={{ m.filename | urlencode }}"
+       hx-trigger="change"
+       hx-target="#insp-title">
+
+    <div class="flex flex-col text-xs text-zinc-400 overflow-hidden">
+        <p class="text-zinc-300 font-medium truncate">{{ m.filename }} {% if m.season %}({{ m.season }}){% endif %}</p>
+        <span class="text-[10px] text-zinc-500">Type : {{ m.type or 'N/A' }} / Family : {{ m.fam or 'N/A' }} / Length : {{ m.length or '00:00' }}</span>
+        <span class="text-[10px] text-zinc-500 truncate">{{ m.description or '...' }}</span>
+        <span class="text-[10px] text-zinc-500">First aired : {{ m.first_aired or 'XX/XX/20XX' }} / Last aired : {{ m.last_aired or 'XX/XX/20XX' }}</span>
     </div>
 
     <div class="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <button class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer"
+        <button class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-white flex items-center justify-center transition cursor-pointer"
                 hx-post="/playout/playlist_draft_add?source={{ m.filename }}"
                 hx-include="#playlist-date"
                 hx-target="#playlist-container">
@@ -25,9 +30,9 @@
         </button>
     </div>
 
-</div>
+</label>
 {% else %}
-<div class="p-4 text-center text-slate-600 text-xs">
+<div class="p-4 text-center text-zinc-600 text-xs">
     Sorry, no media was found.
 </div>
 {% endfor %}

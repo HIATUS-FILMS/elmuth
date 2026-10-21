@@ -1,39 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-transparent text-slate-100 min-h-screen flex flex-col font-sans">
+<div class="bg-transparent text-zinc-100 min-h-screen flex flex-col font-sans">
     
-    <div class="px-6 py-4 flex flex-col items-center bg-transparent">
-        <div class="px-6 py-4 flex flex-col items-center">
-            <img class="h-10 object-cover ..." src="static/img/logo.png">
-        </div>
-        <div class="mx-auto flex max-w-lg items-center gap-x-4 rounded-full bg-white p-0 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
-            <ul class="flex">
-                <li class="flex-1 mr-2">
-                    <a class="text-center block border border-gray-500 rounded-full py-1 px-4 bg-gray-900 hover:bg-transparent text-gray-200" href="/dashboard">Broadcast</a>
-                </li>
-                <li class="flex-1 mr-2">
-                    <a class="block py-1 px-4 text-gray-400 hover:bg-gray-900 rounded-full" href="/playout">Playout</a>
-                </li>
-                <li class="flex-1 mr-2">
-                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Templates</a>
-                </li>
-                <li class="flex-1 mr-2">
-                    <a class="block py-1 px-4 text-gray-400 cursor-not-allowed" href="#">Settings</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+    {% include 'modules/navbar.html' %}
 
     <div class="gap-2 p-1 flex mb-4">
-        <div class="w-1/2 bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-slate-300 uppercase font-semibold">Time</p>
+        <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+            <p class="text-zinc-300 uppercase font-semibold">Time</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p id="time" style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
             </div>
         </div>
-        <div class="w-1/2 bg-slate-900/50 border border-slate-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-slate-300 uppercase font-semibold">Remaining time (Playlist)</p>
+        <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+            <p class="text-zinc-300 uppercase font-semibold">Remaining time (Playlist)</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
             </div>
@@ -44,55 +24,55 @@
         
         <!--WARNING : The queue module is still in its early development. There is a lot of bugs, so there will be changes in the future-->
 
-        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
-            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Queue</h2>
+        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+            <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Queue</h2>
             <div class="overflow-y-auto">
                 <div hx-get="/dashboard/running" hx-trigger="load, every 1.5s" hx-swap="innerHTML" class="flex-1 flex flex-col overflow-hidden"></div> <!--displaying the queue / playlist module-->
             </div>
         </section>
 
-        <section class="col-span-6 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
+        <section class="col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col max-h-fit">
             <div class="flex items-center gap-2">
                 <p id="media-title"></p>
                 <p id="media-duration"></p>
             </div>
-            <div class="bg-black aspect-video rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group">
+            <div class="bg-black aspect-video rounded-xl border border-zinc-800 flex items-center justify-center relative overflow-hidden group">
                 
-                <div class="bg-black aspect-video rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden group w-full">
+                <div class="bg-black aspect-video rounded-xl border border-zinc-800 flex items-center justify-center relative overflow-hidden group w-full">
                     <video id="videoPlayer" class="w-full h-full object-cover rounded-lg" controls autoplay></video>
                 </div>
             </div>
 
-            <div class="mt-4 space-y-2 bg-slate-900 border border-slate-800/80 rounded-2xl p-4">
-                <div class="flex justify-center text-xs text-slate-500">
-                    <div class="flex gap-3 text-slate-400">
-                        <button hx-get="/dashboard/prev" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏮&#xFE0E;</button>
-                        <button hx-get="/dashboard/play" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⯈&#xFE0E;</button>
-                        <button hx-get="/dashboard/stop" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏹&#xFE0E;</button>
-                        <button hx-get="/dashboard/next" hx-swap="none" class="bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full">⏭&#xFE0E;</button>
+            <div class="mt-4 space-y-2 bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4">
+                <div class="flex justify-center text-xs text-zinc-500">
+                    <div class="flex gap-3 text-zinc-400">
+                        <button hx-get="/dashboard/prev" hx-swap="none" class="bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded-full">⏮&#xFE0E;</button>
+                        <button hx-get="/dashboard/play" hx-swap="none" class="bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded-full">⯈&#xFE0E;</button>
+                        <button hx-get="/dashboard/stop" hx-swap="none" class="bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded-full">⏹&#xFE0E;</button>
+                        <button hx-get="/dashboard/next" hx-swap="none" class="bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded-full">⏭&#xFE0E;</button>
                     </div>
                 </div>
                 <div>
                     {% include "modules/progress.html" %}
                 </div>
-                <div class="flex justify-between text-xs text-slate-500">
+                <div class="flex justify-between text-xs text-zinc-500">
                     {% include "modules/elapsed_current.html" %}
                     <span id="media-remaining">Remaining time : 00:00</span>
                 </div>
             </div>
         </section>
 
-        <section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between max-h-fit">
+        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between max-h-fit">
             <div class="space-y-2">
-                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ffplayout message</h2>
+                <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">ffplayout message</h2>
 
                 <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0">
                     <label for="message" class="block mb-1 text-sm font-medium text-heading">Message text</label>
-                    <textarea name="message" id="message" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" placeholder="Important announcement..."></textarea>
+                    <textarea name="message" id="message" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" placeholder="Important announcement..."></textarea>
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Font</label>
-                            <select name="font" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner">
+                            <select name="font" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner">
                                 <option>DejaVu Sans</option>
                                 <option>DejaVu Sans Mono</option>
                                 <option>DejaVu Serif</option>
@@ -100,79 +80,79 @@
                         </div>
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Font size</label>
-                            <input id="font-size" name="font_size" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="24">  
+                            <input id="font-size" name="font_size" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="24">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">X axis</label>
-                            <input id="x-axis" name="x_axis" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="center">  
+                            <input id="x-axis" name="x_axis" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="center">  
                         </div>  
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Y axis</label>
-                            <input id="y-axis" name="y_axis" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="end:30">  
+                            <input id="y-axis" name="y_axis" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="end:30">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Scrolling</label>
-                            <select name="scroll" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner">
+                            <select name="scroll" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner">
                                 <option>right_to_left</option>
                                 <option>left_to_right</option>
                             </select> 
                         </div>
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Speed</label>
-                            <input id="speed" name="speed" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="100">  
+                            <input id="speed" name="speed" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="100">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Text color</label>
-                            <input id="txt-color" name="txt_color" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="#ffffff">  
+                            <input id="txt-color" name="txt_color" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="#ffffff">  
                         </div>  
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Text opacity</label>
-                            <input id="txt-opacity" name="txt_opacity" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="1">  
+                            <input id="txt-opacity" name="txt_opacity" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="1">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Background color</label>
-                            <input id="bg-color" name="bg_color" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="#000000">  
+                            <input id="bg-color" name="bg_color" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="#000000">  
                         </div>  
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Background opacity</label>
-                            <input id="bg-opacity" name="bg_opacity" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="0,8">  
+                            <input id="bg-opacity" name="bg_opacity" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="0,8">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Border</label>
-                            <input id="border" name="border" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="4">  
+                            <input id="border" name="border" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="4">  
                         </div>  
                         <div class="w-1/2">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Spacing</label>
-                            <input id="spacing" name="spacing" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="4">  
+                            <input id="spacing" name="spacing" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="4">  
                         </div>             
                     </div>
 
                     <div class="gap-2 p-0 flex mb-1.5">
                         <div class="w-full">
                             <label for="message" class="block mb-1 text-sm font-medium text-heading">Repetition</label>
-                            <input id="repeat" name="repeat" class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" type="text" placeholder="-1">  
+                            <input id="repeat" name="repeat" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" type="text" placeholder="-1">  
                         </div>               
                     </div>
                     <br>
                     <input type="checkbox" name="background" class="shrink-0 size-4 bg-transparent border-line-3 rounded-sm shadow-2xs text-primary focus:ring-0 focus:ring-offset-0 checked:bg-primary-checked checked:border-primary-checked disabled:opacity-50 disabled:pointer-events-none" id="hs-checked-checkbox" checked>
                     <label for="hs-checked-checkbox" class="text-sm ms-3 text-muted-foreground-1">Text background</label>
                     <br> <br>
-                    <button type="submit" class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                    <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
                         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                             <path d="M0 0h512v512H0z" fill="none" />
                             <path fill="currentColor" d="m476.59 227.05l-.16-.07L49.35 49.84A23.56 23.56 0 0 0 27.14 52A24.65 24.65 0 0 0 16 72.59v113.29a24 24 0 0 0 19.52 23.57l232.93 43.07a4 4 0 0 1 0 7.86L35.53 303.45A24 24 0 0 0 16 327v113.31A23.57 23.57 0 0 0 26.59 460a23.94 23.94 0 0 0 13.22 4a24.55 24.55 0 0 0 9.52-1.93L476.4 285.94l.19-.09a32 32 0 0 0 0-58.8" />

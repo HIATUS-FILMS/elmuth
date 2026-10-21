@@ -1,0 +1,40 @@
+<div class="px-6 py-4 flex flex-col items-center bg-transparent">
+    <div class="px-6 py-4 flex flex-col items-center">
+        <img class="h-10 object-cover" src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+    </div>
+    <div class="mx-auto flex max-w-lg items-center gap-x-4 rounded-full bg-white p-0 shadow-lg outline outline-black/5 dark:bg-zinc-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+        <ul class="flex">
+
+            <li class="flex-1 mr-2">
+                <a class="text-center block rounded-full py-1 px-4 transition-colors duration-200 
+                    {% if request.path == '/dashboard' %}
+                        border border-zinc-500 bg-zinc-900 text-zinc-200 hover:bg-transparent
+                    {% else %}
+                        text-zinc-400 hover:bg-zinc-900
+                    {% endif %}" 
+                   href="/dashboard">Broadcast</a>
+            </li>
+
+
+            <li class="flex-1 mr-2">
+                <a class="text-center block rounded-full py-1 px-4 transition-colors duration-200 
+                    {% if request.path == '/playout' %}
+                        border border-zinc-500 bg-zinc-900 text-zinc-200 hover:bg-transparent
+                    {% else %}
+                        text-zinc-400 hover:bg-zinc-900
+                    {% endif %}" 
+                   href="/playout">Playout</a>
+            </li>
+
+
+            <li class="flex-1 mr-2">
+                <a class="block py-1 px-4 text-zinc-400 cursor-not-allowed" href="#">Templates</a>
+            </li>
+
+
+            <li class="flex-1 mr-2">
+                <a class="block py-1 px-4 text-zinc-400 cursor-not-allowed" href="#">Settings</a>
+            </li>
+        </ul>
+    </div>
+</div>

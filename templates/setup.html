@@ -1,53 +1,60 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-slate-950 p-6">
-    <form class="w-full max-w-lg" action="/setup" method="POST">
-    <img class="h-28 object-contain" src="static/img/logo.png" alt="Elmuth"><br><br>
-    <div class="flex flex-wrap -mx-3 mb-6">
-        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-slate-100 text-xs font-bold mb-2" for="ffuser">
-            ffplayout username
-        </label>
-        <input class="appearance-none block w-full bg-slate-200 text-gray-500 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-slate-100" id="ffuser" type="text" placeholder="admin" name="ffuser">
+<div class="min-h-screen flex items-center justify-center bg-zinc-950 p-6">
+    <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex">
+        <form class="w-full max-w-lg py-6" action="/setup" method="POST">
+        <div class="py-3 flex flex-col items-center">
+            <img class="h-18 object-cover" src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
         </div>
-        <div class="w-full md:w-1/2 px-3">
-        <label class="block uppercase tracking-wide text-slate-100 text-xs font-bold mb-2" for="ffpassword">
-            ffplayout password
-        </label>
-        <input class="appearance-none block w-full bg-slate-200 text-gray-500 border border-gray-500 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-slate-100 focus:border-gray-500" id="ffpassword" type="password" placeholder="**********" name="ffpassword">
-        <p class="text-white text-xs italic">Please fill out this field.</p>
-    </div>
-    </div>
-    <div class="flex flex-wrap -mx-3 mb-6">
-        <div class="w-full px-3">
-        <label class="block uppercase tracking-wide text-slate-100 text-xs font-bold mb-2" for="ffaddress">
-            ffplayout address
-        </label>
-        <input class="appearance-none block w-full bg-slate-200 text-gray-500 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-slate-100 focus:border-gray-500" id="ffaddress" type="text" placeholder="http(s)://192.168.1.X:8787" name="ffaddress">
-        <p class="text-gray-500 text-xs italic">Specify http(s)://192.168.1.X:8787 or http://localhost:8787</p>
+        <div class="flex flex-wrap -mx-3 mb-6 py-3">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-zinc-100 text-xs font-bold mb-2" for="ffuser">
+                ffplayout username
+            </label>
+            <input class="py-2.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" id="ffuser" type="text" placeholder="admin" name="ffuser">
+            </div>
+            <div class="w-full md:w-1/2 px-3">
+            <label class="block uppercase tracking-wide text-zinc-100 text-xs font-bold mb-2" for="ffpassword">
+                ffplayout password
+            </label>
+            <input class="py-2.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" id="ffpassword" type="password" placeholder="**********" name="ffpassword">
         </div>
-    </div>
-    <div class="flex flex-wrap -mx-3 mb-6">
-        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-        <label class="block uppercase tracking-wide text-slate-100 text-xs font-bold mb-2" for="eluser">
-            elmuth username
-        </label>
-        <input class="appearance-none block w-full bg-slate-200 text-gray-500 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-slate-100" id="eluser" type="text" placeholder="kruger" name="eluser">
         </div>
-        <div class="w-full md:w-1/2 px-3">
-        <label class="block uppercase tracking-wide text-slate-100 text-xs font-bold mb-2" for="elpassword">
-            elmuth password
-        </label>
-        <input class="appearance-none block w-full bg-slate-200 text-gray-500 border border-gray-500 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-slate-100 focus:border-gray-500" id="elpassword" type="password" placeholder="**********" name="elpassword">
-        <p class="text-white text-xs italic">Please fill out this field.</p>
+        <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full px-3">
+            <label class="block uppercase tracking-wide text-zinc-100 text-xs font-bold mb-2" for="ffaddress">
+                ffplayout address
+            </label>
+            <input class="py-2.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" id="ffaddress" type="text" placeholder="http(s)://192.168.1.X:8787" name="ffaddress">
+            <p class="text-gray-500 text-xs italic">Specify http(s)://192.168.1.X:8787 or http://localhost:8787</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-zinc-100 text-xs font-bold mb-2" for="eluser">
+                elmuth username
+            </label>
+            <input class="py-2.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" id="eluser" type="text" placeholder="kruger" name="eluser">
+            </div>
+            <div class="w-full md:w-1/2 px-3">
+            <label class="block uppercase tracking-wide text-zinc-100 text-xs font-bold mb-2" for="elpassword">
+                elmuth password
+            </label>
+            <input class="py-2.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" id="elpassword" type="password" placeholder="**********" name="elpassword">
+        </div>
+        </div>
+        <div class="mt-6">
+            <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path fill="currentColor" d="M20 17H4V5h8V3H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h4v2h8v-2h4c1.1 0 2-.9 2-2v-3h-2z" />
+                    <path fill="currentColor" d="m17 14l5-5l-1.41-1.41L18 10.17V3h-2v7.17l-2.59-2.58L12 9z" />
+                </svg>
+                <span>Setup</span>
+            </button>
+        </div>
+        </form>
     </div>
-    </div>
-    <div class="mt-6">
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline">
-        Submit
-        </button>
-    </div>
-    </form>
 </div>
 {% endblock %}

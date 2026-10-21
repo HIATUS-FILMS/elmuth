@@ -1,11 +1,11 @@
-<section class="col-span-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+<section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
 
     <div class="gap-2 p-0 flex mb-1.5">
         <div class="w-1/2">
             <p class="block mb-1 text-sm font-medium text-heading">Media asset management</p>
         </div>  
         <div class="w-1/2">
-            <button class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+            <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
                 <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.776a3 3 0 0 0 2.121 2.122C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.122C21 18.396 21 17.93 21 17m-4.5-9.5S13.186 3 12 3S7.5 7.5 7.5 7.5M12 4v12" />
@@ -20,14 +20,14 @@
             <div class="w-1/2">
                 <label for="search-name" class="block mb-1 text-sm font-medium text-heading">Search name</label>
                 <input id="search-name" name="search_name" 
-                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" 
                        type="text" placeholder="Media name"
                        hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>  
             <div class="w-1/2">
                 <label for="search-season" class="block mb-1 text-sm font-medium text-heading">Season</label>
                 <input id="search-season" name="search_season" 
-                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" 
                        type="text" placeholder="2026"
                        hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>             
@@ -37,21 +37,21 @@
             <div class="w-1/2">
                 <label for="search-type" class="block mb-1 text-sm font-medium text-heading">Type</label>
                 <input id="search-type" name="search_type" 
-                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" 
                        type="text" placeholder="CLIP"
                        hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>  
             <div class="w-1/2">
                 <label for="search-family" class="block mb-1 text-sm font-medium text-heading">Family</label>
                 <input id="search-family" name="search_family" 
-                       class="py-1.5 w-full bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs text-gray-500 focus:outline-none focus:border-slate-600 placeholder:text-gray-500 resize-none shadow-inner" 
+                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner" 
                        type="text" placeholder="TOP"
                        hx-get="/playout/filter" hx-target="#media-list" hx-trigger="keyup changed delay:300ms" hx-include="form">  
             </div>             
         </div>
     </form>
 
-    <div id="media-list" class="space-y-2 overflow-y-auto flex-1 text-xs text-slate-400">
+    <div id="media-list" class="space-y-2 overflow-y-auto flex-1 text-xs text-zinc-400">
         {% include "modules/mam_items.html" %}
     </div>
 </section>
