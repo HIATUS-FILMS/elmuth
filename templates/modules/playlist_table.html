@@ -13,7 +13,7 @@
     </thead>
     <tbody>
         {% for item in playlist %}
-        <tr class="hover:bg-zinc-800/30 transition-colors cursor-pointer has-[:checked]:bg-mauve-600/50" data-source="{{ item.source }}" data-title="{{ item.title | default(item.source.split('/')[-1]) }}">
+        <tr class="hover:bg-zinc-800/30 transition-colors cursor-pointer has-[:checked]:bg-mauve-600/50 {% if item.pending_delete %}hidden{% endif %}" data-source="{{ item.source }}" data-title="{{ item.title | default(item.source.split('/')[-1]) }}">
             <td class="py-2">
                 <input type="radio" name="selected" id="pl-{{ loop.index0 }}" value="playlist:{{ loop.index0 }}" class="sr-only"
                 hx-get="/playout/inspect?name={{ (item.title | default(item.source.split('/')[-1])) | urlencode }}"

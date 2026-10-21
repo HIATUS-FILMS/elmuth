@@ -2,8 +2,9 @@
 
 import requests
 import datetime
+import json
 from bcolors import bcolors
-from flask import render_template, request, jsonify, session
+from flask import render_template, request, jsonify, session, Response
 from ffplayout import readaddress, readid, ffheaders
 import flask_login
 from media import connect_db
@@ -35,38 +36,39 @@ def format_duration(item):
     else:
         item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
 
+def fetch_api_items(date):
+    try:
+        response = requests.get(f"{readaddress()}/api/playlist/{readid()}?date={date}", headers=ffheaders())
+        if response.status_code == 200:
+            return response.json().get("program", [])
+    except Exception as e:
+        print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {date} : {e}" + bcolors.ENDC)
+    return []
+
+def get_deleted(date):
+    data = session.get('draft_deleted', {})
+    if data.get("date") == date:
+        return data.get("indices", [])
+    return []
+
+def prepare_items(api_items, date):
+    deleted = get_deleted(date)
+    items = []
+    for i, item in enumerate(api_items):
+        item["pending_delete"] = (i in deleted)
+        items.append(item)
+    items = items + session.get('draft_playlist', [])
+    for item in items:
+        format_duration(item)
+    return items
+
 def playlist_register(app):
 
     @app.route('/playout/playlist_load', methods=['GET'])
     @flask_login.login_required
     def playlist_load():
         select_date = request.args.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
-        
-        headers = ffheaders()
-        url = f"{readaddress()}/api/playlist/{readid()}?date={select_date}"
-        
-        playlist_items = []
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                data = response.json()
-                playlist_items = data.get("program", [])
-        except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {select_date} : {e}" + bcolors.ENDC)
-
-        drafts = session.get('draft_playlist', [])
-        playlist_items = playlist_items + drafts
-
-        for item in playlist_items:
-            if "duration" in item:
-                total_seconds = int(item["duration"])
-                hours = total_seconds // 3600
-                minutes = (total_seconds % 3600) // 60
-                seconds = total_seconds % 60
-                if hours > 0:
-                    item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-                else:
-                    item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
+        playlist_items = prepare_items(fetch_api_items(select_date), select_date)
 
         if request.headers.get('HX-Request'):
             return render_template('modules/playlist_table.html', playlist=playlist_items, select_date=select_date)
@@ -156,21 +158,10 @@ def playlist_register(app):
         session.modified = True
 
         selected_date = request.form.get("playlist_date") or request.args.get("date") or datetime.date.today().strftime('%Y-%m-%d')
-        headers = ffheaders()
-        url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
-        
-        playlist_items = []
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                playlist_items = response.json().get("program", [])
-        except Exception:
-            pass
 
-        full_items = playlist_items + session['draft_playlist']
-        for item in full_items:
-            format_duration(item)
-        return render_template('modules/playlist_table.html', playlist=full_items, select_date=selected_date)
+        return render_template('modules/playlist_table.html',
+                       playlist=prepare_items(fetch_api_items(selected_date), selected_date),
+                       select_date=selected_date)
 
     @app.route('/playout/playlist_save_all', methods=['POST'])
     @flask_login.login_required
@@ -189,14 +180,16 @@ def playlist_register(app):
             if "program" not in playlist_data:
                 playlist_data["program"] = []
 
-            drafts = session.get('draft_playlist', [])
-            playlist_data["program"].extend(drafts)
+            deleted = get_deleted(selected_date)
+            kept = [item for i, item in enumerate(playlist_data["program"]) if i not in deleted]
+            playlist_data["program"] = kept + session.get('draft_playlist', [])
 
             url_post = f"{readaddress()}/api/playlist/{readid()}"
             save_response = requests.post(url_post, headers=headers, json=playlist_data)
 
             if save_response.status_code in [200, 201]:
                 session.pop('draft_playlist', None)
+                session.pop('draft_deleted', None)
                 print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [SUCCESS] Playlist saved for {selected_date}" + bcolors.ENDC)
                 return "", 204
             else:
@@ -272,3 +265,49 @@ def playlist_register(app):
                     item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
             
         return render_template('modules/playlist_table.html', playlist=full_items, select_date=selected_date)
+
+    @app.route('/playout/playlist_clear', methods=['POST'])
+    @flask_login.login_required
+    def playlist_clear():
+        selected_date = request.form.get("playlist_date") or request.args.get("date")
+        if not selected_date:
+            return jsonify({"error": "Missing date"}), 400
+
+        api_items = fetch_api_items(selected_date)
+
+        session.pop('draft_playlist', None)
+        session['draft_deleted'] = {"date": selected_date, "indices": list(range(len(api_items)))}
+        session.modified = True
+
+        return render_template('modules/playlist_table.html',
+                            playlist=prepare_items(api_items, selected_date),
+                            select_date=selected_date)
+
+    @app.route('/playout/playlist_download', methods=['GET'])
+    @flask_login.login_required
+    def playlist_download():
+        selected_date = request.args.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
+        
+        headers = ffheaders()
+        url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
+
+        try:
+            response = requests.get(url, headers=headers)
+            playlist_data = response.json() if response.status_code == 200 else {"date": selected_date, "program": []}
+
+
+            drafts = session.get('draft_playlist', [])
+            if "program" in playlist_data:
+                playlist_data["program"].extend(drafts)
+            else:
+                playlist_data["program"] = drafts
+
+            json_str = json.dumps(playlist_data, indent=4, ensure_ascii=False)
+
+            return Response(
+                json_str,
+                mimetype="application/json",
+                headers={"Content-Disposition": f"attachment;filename=playlist_{selected_date}.json"}
+            )
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
