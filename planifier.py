@@ -122,7 +122,7 @@ def playlist_register(app):
                 print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [SUCCESS] Playlist reordered for {selected_date}" + bcolors.ENDC)
                 return jsonify({"status": "success", "message": "Order updated"}), 200
             else:
-                print(bcolors.FAIL + f"FFPLAYOUT DEBUG: {save_response.text}" + bcolors.ENDC)
+                print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error response : {save_response.text}" + bcolors.ENDC)
                 return jsonify({"status": "error", "message": "Failed to update ffplayout"}), 500
 
         except Exception as e:
