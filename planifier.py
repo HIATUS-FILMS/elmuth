@@ -59,7 +59,6 @@ def add_media_info(items):
         row = connect.execute(
             "SELECT type, fam, description FROM media WHERE filename = ?", (filename,)
         ).fetchone()
-        print("DEBUG info :", filename, "->", dict(row) if row else "NOT FOUND in the database")
         if row:
             item["type"] = row["type"]
             item["fam"] = row["fam"]
@@ -235,7 +234,6 @@ def playlist_register(app):
     @app.route('/playout/playlist_draft_delete', methods=['POST'])
     @flask_login.login_required
     def playlist_draft_delete():
-        print("DEBUG delete form :", dict(request.form))
         
         selected_date = request.form.get("playlist_date")
         selected = request.form.get("selected", "")
@@ -346,7 +344,7 @@ def playlist_register(app):
         target_filename = request.args.get('filename') or request.form.get('filename')
 
         if request.method == 'POST':
-            name = request.form.get('name', '')
+            name = request.form.get('name', '') or None
             type = request.form.get('type', '')
             family = request.form.get('family', '')
             description = request.form.get('description', '')

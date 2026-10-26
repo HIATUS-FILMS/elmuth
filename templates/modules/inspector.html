@@ -9,7 +9,7 @@
 
         <div class="flex flex-col gap-1">
             <label class="block mb-1 text-sm font-medium text-heading">Name</label>
-            <input name="name" id="name" value="{{ media.medianame if media else '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
+            <input name="name" id="name" value="{{ media.medianame or '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
         </div>
 
         <div class="flex gap-2">
