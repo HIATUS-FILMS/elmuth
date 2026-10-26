@@ -145,52 +145,11 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                 </div>
             </div>
 
-            <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
-                <p id="insp-title" class="text-sm font-medium text-heading mb-1">Select any media</p>
-                
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">Name</label>
-                    <input class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
-                </div>
 
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">Type</label>
-                    <select class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
-                        <option>---</option>
-                    </select>
-                </div>
 
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">Family</label>
-                    <select class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
-                        <option>--</option>
-                    </select>
-                </div>
+        {% include "modules/inspector.html" %}
 
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">Description</label>
-                    <textarea class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16"></textarea>
-                </div>
 
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">First aired</label>
-                    <input type="date" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="block mb-1 text-sm font-medium text-heading">Last aired</label>
-                    <input type="date" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
-                </div>
-
-                <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path fill="currentColor" d="M7.25 7.6c0 .966.784 1.75 1.75 1.75h6a1.75 1.75 0 0 0 1.75-1.75V4.276c0-.152.124-.276.276-.276a.5.5 0 0 1 .38.174l2.963 3.455a2.5 2.5 0 0 1 .6 1.725l-.342 8.744A2.5 2.5 0 0 1 18.13 20.5h-.379a.5.5 0 0 1-.5-.5v-5a1.75 1.75 0 0 0-1.75-1.75h-7A1.75 1.75 0 0 0 6.75 15v5a.5.5 0 0 1-.5.5h-.137a2.39 2.39 0 0 1-2.373-2.089a47.8 47.8 0 0 1-.063-11.625l.06-.52A2.564 2.564 0 0 1 6.284 4h.466a.5.5 0 0 1 .5.5z" />
-                        <path fill="currentColor" d="M8.25 20a.5.5 0 0 0 .5.5h6.5a.5.5 0 0 0 .5-.5v-5a.25.25 0 0 0-.25-.25h-7a.25.25 0 0 0-.25.25zm7-15.5a.5.5 0 0 0-.5-.5h-5.5a.5.5 0 0 0-.5.5v3.1c0 .138.112.25.25.25h6a.25.25 0 0 0 .25-.25z" />
-                    </svg>
-                    <span>Save</span>
-                </button>
-            </div>
 
         </section>
 

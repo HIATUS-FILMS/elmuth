@@ -25,6 +25,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS media (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             filename TEXT UNIQUE NOT NULL,
+            medianame TEXT UNIQUE,
             filepath TEXT NOT NULL,
             type TEXT,
             fam TEXT,
@@ -32,6 +33,8 @@ def init_db():
             length TEXT,
             description TEXT,
             storage TEXT,
+            firstaired TEXT,
+            lastaired TEXT,
             present INTEGER DEFAULT 1
             )
     ''')

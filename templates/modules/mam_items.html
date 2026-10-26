@@ -2,9 +2,10 @@
 <label class="p-3 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 transition flex items-center justify-between gap-4 group cursor-pointer has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400" data-source="{{ m.filename }}">
 
     <input type="radio" name="selected" value="mam" class="sr-only"
-       hx-get="/playout/inspect?name={{ m.filename | urlencode }}"
-       hx-trigger="change"
-       hx-target="#insp-title">
+        hx-get="/playout/inspect?name={{ m.filename | urlencode }}"
+        hx-trigger="change"
+        hx-target="#inspector-content"
+        hx-swap="outerHTML">
 
     <div class="flex flex-col text-xs text-zinc-400 overflow-hidden">
         <p class="text-zinc-300 font-medium truncate">{{ m.filename }} {% if m.season %}({{ m.season }}){% endif %}</p>

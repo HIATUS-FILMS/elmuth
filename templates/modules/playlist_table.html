@@ -16,9 +16,10 @@
         <tr class="hover:bg-zinc-800/30 transition-colors cursor-pointer has-[:checked]:bg-mauve-600/50 {% if item.pending_delete %}hidden{% endif %}" data-source="{{ item.source }}" data-title="{{ item.title | default(item.source.split('/')[-1]) }}">
             <td class="py-2">
                 <input type="radio" name="selected" id="pl-{{ loop.index0 }}" value="playlist:{{ loop.index0 }}" class="sr-only"
-                hx-get="/playout/inspect?name={{ (item.title | default(item.source.split('/')[-1])) | urlencode }}"
-                hx-trigger="change"
-                hx-target="#insp-title">
+                    hx-get="/playout/inspect?name={{ (item.title | default(item.source.split('/')[-1])) | urlencode }}"
+                    hx-trigger="change"
+                    hx-target="#inspector-content"
+                    hx-swap="outerHTML">
                 <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ selected_date }}</label>
             </td>
             <td class="py-2">
@@ -51,7 +52,7 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="8" class="py-4 text-center text-zinc-600">Aucune playlist pour cette date.</td>
+            <td colspan="8" class="py-4 text-center text-zinc-600">No playlist for this date.</td>
         </tr>
         {% endfor %}
     </tbody>

@@ -1,0 +1,58 @@
+<div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3" id="inspector-content">
+    <p id="insp-title" class="text-sm font-medium text-heading mb-1">
+        {{ media.filename if media else 'Select any media' }}
+    </p>
+    
+    <form class="space-y-3" method="POST" action="/playout/edit">
+
+        <input type="hidden" name="filename" value="{{ media.filename if media else '' }}">
+
+        <div class="flex flex-col gap-1">
+            <label class="block mb-1 text-sm font-medium text-heading">Name</label>
+            <input name="name" id="name" value="{{ media.medianame if media else '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
+        </div>
+
+        <div class="flex gap-2">
+            <div class="flex flex-col gap-1 w-1/2">
+                <label class="block mb-1 text-sm font-medium text-heading">Type</label>
+                <select name="type" id="type" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                    <option></option>
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-1 w-1/2">
+                <label class="block mb-1 text-sm font-medium text-heading">Family</label>
+                <select name="family" id="family" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                    <option></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="block mb-1 text-sm font-medium text-heading">Season</label>
+            <input name="season" id="season" value="{{ media.season if media else '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text">
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="block mb-1 text-sm font-medium text-heading">Description</label>
+            <textarea name="description" id="description" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16">{{ media.description if media else '' }}</textarea>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="block mb-1 text-sm font-medium text-heading">First aired</label>
+            <input name="first" id="first" type="date" value="{{ media.firstaired if media else '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <label class="block mb-1 text-sm font-medium text-heading">Last aired</label>
+            <input name="last" id="last" type="date" value="{{ media.lastaired if media else '' }}" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center cursor-pointer">
+                <span>Save</span>
+            </button>
+        </div>
+
+    </form>
+</div>

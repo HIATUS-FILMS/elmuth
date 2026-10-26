@@ -4,7 +4,7 @@ import requests
 import datetime
 import json
 from bcolors import bcolors
-from flask import render_template, request, jsonify, session, Response
+from flask import render_template, request, jsonify, session, Response, redirect
 from ffplayout import readaddress, readid, ffheaders
 import flask_login
 from media import connect_db
@@ -197,13 +197,16 @@ def playlist_register(app):
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-    
     @app.route('/playout/inspect', methods=['GET'])
     @flask_login.login_required
     def playout_inspect():
         name = request.args.get("name", "")
-        inspect_name = escape(name)
-        return inspect_name
+        media = None
+        if name:
+            with connect_db() as db:
+                media = db.execute("SELECT * FROM media WHERE filename = ?", (name,)).fetchone()
+        
+        return render_template('modules/inspector.html', media=media)
 
     @app.route('/playout/playlist_draft_delete', methods=['POST'])
     @flask_login.login_required
@@ -311,3 +314,33 @@ def playlist_register(app):
             )
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+    @app.route('/playout/edit', methods=['GET', 'POST']) #metadata editor
+    @flask_login.login_required
+    def edit_form():
+        media = None
+        target_filename = request.args.get('filename') or request.form.get('filename')
+
+        if request.method == 'POST':
+            name = request.form.get('name', '')
+            type = request.form.get('type', '')
+            family = request.form.get('family', '')
+            description = request.form.get('description', '')
+            first = request.form.get('first', '') or None
+            last = request.form.get('last', '') or None
+            season = request.form.get('season', '')
+
+            try:
+                with connect_db() as authdb:
+                    cursor_auth = authdb.cursor()
+                    cursor_auth.execute(
+                        """UPDATE media 
+                        SET medianame = ?, type = ?, fam = ?, season = ?, description = ?, firstaired = ?, lastaired = ? 
+                        WHERE filename = ?""", 
+                        (name, type, family, season, description, first, last, target_filename)
+                    )
+                    authdb.commit()
+            except Exception as e:
+                print(f"An error occurred while updating the media: {e}")
+
+        return redirect('/playout')
