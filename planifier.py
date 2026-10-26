@@ -51,6 +51,29 @@ def get_deleted(date):
         return data.get("indices", [])
     return []
 
+def add_media_info(items):
+
+    connect = connect_db()
+    for item in items:
+        filename = item["source"].split("/")[-1]
+        row = connect.execute(
+            "SELECT type, fam, description FROM media WHERE filename = ?", (filename,)
+        ).fetchone()
+        print("DEBUG info :", filename, "->", dict(row) if row else "NOT FOUND in the database")
+        if row:
+            item["type"] = row["type"]
+            item["fam"] = row["fam"]
+            item["description"] = row["description"]
+    connect.close()
+
+def get_distinct_values(column):
+    connect = connect_db()
+    rows = connect.execute(
+        f"SELECT DISTINCT {column} FROM media WHERE {column} IS NOT NULL AND {column} != '' ORDER BY {column}"
+    ).fetchall()
+    connect.close()
+    return [row[0] for row in rows]
+
 def prepare_items(api_items, date):
     deleted = get_deleted(date)
     items = []
@@ -58,6 +81,7 @@ def prepare_items(api_items, date):
         item["pending_delete"] = (i in deleted)
         items.append(item)
     items = items + session.get('draft_playlist', [])
+    add_media_info(items)
     for item in items:
         format_duration(item)
     return items
@@ -71,9 +95,9 @@ def playlist_register(app):
         playlist_items = prepare_items(fetch_api_items(select_date), select_date)
 
         if request.headers.get('HX-Request'):
-            return render_template('modules/playlist_table.html', playlist=playlist_items, select_date=select_date)
+            return render_template('modules/playlist_table.html', playlist=playlist_items, selected_date=select_date)
 
-        return render_template('playout.html', playlist=playlist_items, select_date=select_date)
+        return render_template('playout.html', playlist=playlist_items, selected_date=select_date)
 
     @app.route('/playout/playlist_edit', methods=['POST'])
     @flask_login.login_required
@@ -161,7 +185,7 @@ def playlist_register(app):
 
         return render_template('modules/playlist_table.html',
                        playlist=prepare_items(fetch_api_items(selected_date), selected_date),
-                       select_date=selected_date)
+                       selected_date=selected_date)
 
     @app.route('/playout/playlist_save_all', methods=['POST'])
     @flask_login.login_required
@@ -206,7 +230,7 @@ def playlist_register(app):
             with connect_db() as db:
                 media = db.execute("SELECT * FROM media WHERE filename = ?", (name,)).fetchone()
         
-        return render_template('modules/inspector.html', media=media)
+        return render_template('modules/inspector.html', media=media, types=get_distinct_values("type"), families=get_distinct_values("fam"))
 
     @app.route('/playout/playlist_draft_delete', methods=['POST'])
     @flask_login.login_required
@@ -267,7 +291,7 @@ def playlist_register(app):
                 else:
                     item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
             
-        return render_template('modules/playlist_table.html', playlist=full_items, select_date=selected_date)
+        return render_template('modules/playlist_table.html', playlist=prepare_items(api_items, selected_date), selected_date=selected_date)
 
     @app.route('/playout/playlist_clear', methods=['POST'])
     @flask_login.login_required
@@ -284,7 +308,7 @@ def playlist_register(app):
 
         return render_template('modules/playlist_table.html',
                             playlist=prepare_items(api_items, selected_date),
-                            select_date=selected_date)
+                            selected_date=selected_date)
 
     @app.route('/playout/playlist_download', methods=['GET'])
     @flask_login.login_required

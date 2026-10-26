@@ -13,7 +13,7 @@ from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_
 from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
-from planifier import playlist_register
+from planifier import playlist_register, prepare_items
 
 app = Flask(__name__)
 
@@ -393,8 +393,9 @@ def webserver():
                     else:
                         item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
         except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {select_date} : {e}" + bcolors.ENDC)
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {selected_date} : {e}" + bcolors.ENDC)
 
+        playlist_items = prepare_items(playlist_items, selected_date)
         medias_list = []
         try:
             with sqlite3.connect("databases/medias.db") as conn:
@@ -405,11 +406,7 @@ def webserver():
         except Exception as e:
             print(f"Error while reading media database : {e}")
 
-        return render_template('playout.html', 
-                               media=getinfo_current_media(), 
-                               medias=medias_list, 
-                               playlist=playlist_items, 
-                               selected_date=selected_date)
+        return render_template('playout.html', media=getinfo_current_media(), medias=medias_list, playlist=playlist_items, selected_date=selected_date)
 
     @app.route('/media/scan', methods=['POST'])
     @flask_login.login_required

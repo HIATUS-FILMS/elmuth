@@ -32,13 +32,13 @@
                 <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.formatted_duration | default('00:00') }}</label>
             </td>
             <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.type | default('---') }}</label>
+                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.type or 'N/A' }}</label>
             </td>
             <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.fam | default('--') }}</label>
+                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.fam or 'N/A' }}</label>
             </td>
             <td class="py-2 max-w-[150px] truncate px-2" title="{{ item.description | default('...') }}">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer truncate">{{ item.description | default('...') }}</label>
+                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer truncate">{{ item.description or '...' }}</label>
             </td>
             <td class="py-2">
                 <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">
