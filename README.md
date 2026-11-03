@@ -58,14 +58,14 @@ Roadmap (For v1.0)
 * Software base
 - [x] Config file & database support
 - [x] Media scan
-- [ ] Playlist generator
+- [ ] Playlist generator **(Work in progress)**
 
 * WebUI
 - [x] Setup wizard
 - [ ] Playlist editor **(Work in progress)**
 - [x] Playout control
 - [ ] Settings section
-- [ ] Media asset management **(Work in progress)**
+- [x] Media asset management
 
 * ffplayout
 - [x] ffplayout connexion

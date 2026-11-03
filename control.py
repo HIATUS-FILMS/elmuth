@@ -13,7 +13,7 @@ from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_
 from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
-from planifier import playlist_register, prepare_items
+from planifier import playlist_register, prepare_items, get_distinct_values
 from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block
 
 app = Flask(__name__)
@@ -407,7 +407,14 @@ def webserver():
         except Exception as e:
             print(f"Error while reading media database : {e}")
 
-        return render_template('playout.html', media=getinfo_current_media(), medias=medias_list, playlist=playlist_items, selected_date=selected_date)
+        return render_template(
+            'playout.html',
+            media=getinfo_current_media(),
+            medias=medias_list,
+            playlist=playlist_items,
+            selected_date=selected_date,
+            templates=templates_soft()
+        )
 
     @app.route('/media/scan', methods=['POST'])
     @flask_login.login_required
@@ -453,6 +460,34 @@ def webserver():
             print(f"Error while filtering media database : {e}")
 
         return render_template('modules/mam_items.html', medias=medias_list)
+
+    @app.route('/playout/playlist_copy', methods=['POST'])
+    @flask_login.login_required
+    def playout_playlist_copy():
+        source_date = request.form.get('copy_date')
+        target_date = request.form.get('playlist_date')
+
+        if not source_date or not target_date or source_date == target_date:
+            return '', 204
+
+        headers = ffheaders()
+        base = f"{readaddress()}/api/playlist/{readid()}"
+
+        try:
+            r = requests.get(f"{base}?date={source_date}", headers=headers)
+            program = r.json().get("program", []) if r.status_code == 200 else []
+            if not program:
+                return '', 204
+
+            payload = {"channel": readid(), "date": target_date, "program": program}
+            requests.post(base, headers=headers, json=payload)
+        except Exception as e:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Copy {source_date} -> {target_date} : {e}" + bcolors.ENDC)
+            return '', 204
+
+        resp = Response('', 200)
+        resp.headers['HX-Redirect'] = f"/playout?playlist_date={target_date}"
+        return resp
     
     @app.route('/templates', methods=['GET', 'POST'])
     @flask_login.login_required
@@ -460,7 +495,10 @@ def webserver():
 
         template_info = templates_soft()
 
-        return render_template('templates.html', templates=template_info)
+        families_list = get_distinct_values("fam")
+        types_list = get_distinct_values("type")
+
+        return render_template('templates.html', templates=template_info, families=families_list, types=types_list)
 
     @app.route('/templates/create', methods=['POST'])
     @flask_login.login_required
@@ -492,10 +530,23 @@ def webserver():
         except:
             next_time = "01:00:00"
 
+        families_list = get_distinct_values("fam")
+        types_list = get_distinct_values("type")
+
         editor_module = render_template('modules/templates_editor.html', data=data, current_key=template_key)
 
-        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
-        
+        inspector_module = render_template(
+            'modules/templates_inspector.html', 
+            data=data, 
+            current_key=template_key, 
+            last_end=last_end, 
+            next_time=next_time, 
+            is_full=is_full, 
+            families=families_list, 
+            types=types_list,
+            oob=True
+        )
+
         return editor_module + inspector_module
 
     @app.route('/templates/save', methods=['POST'])
@@ -538,8 +589,22 @@ def webserver():
         except:
             next_time = "01:00:00"
             
+        families_list = get_distinct_values("fam")
+        types_list = get_distinct_values("type")
+
         editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
-        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
+        
+        inspector_module = render_template(
+            'modules/templates_inspector.html', 
+            data=data, 
+            current_key=template_key, 
+            last_end=last_end, 
+            next_time=next_time, 
+            is_full=is_full, 
+            families=families_list, 
+            types=types_list,
+            oob=True
+        )
         
         return editor_html + inspector_module
 
@@ -571,10 +636,35 @@ def webserver():
         except:
             next_time = "01:00:00"
             
+        families_list = get_distinct_values("fam")
+        types_list = get_distinct_values("type")
+
         editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
-        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
+        
+        inspector_module = render_template(
+            'modules/templates_inspector.html', 
+            data=data, 
+            current_key=template_key, 
+            last_end=last_end, 
+            next_time=next_time, 
+            is_full=is_full, 
+            families=families_list, 
+            types=types_list,
+            oob=True
+        )
 
         return editor_html + inspector_module
+
+    @app.route('/templates/options')
+    @flask_login.login_required
+    def template_options():
+        opt_type = request.args.get('type')
+        if opt_type == 'family':
+            items = get_distinct_values("fam")
+        else:
+            items = get_distinct_values("type")
+
+        return "".join([f'<option value="{item}">{item}</option>' for item in items])
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

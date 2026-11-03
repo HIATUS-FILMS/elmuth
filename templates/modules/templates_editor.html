@@ -16,7 +16,7 @@
                 <div class="px-2 py-1.5 text-xs text-zinc-100 leading-relaxed flex justify-between items-start">
                     <div>
                         <p>{{ block.description or 'No description' }}</p>
-                        <p>{{ block.family }} / {{ block.type }}</p>
+                        <p>Family: {{ block.family }} / Type: {{ block.type }}</p>
                     </div>
                     
                     <button hx-post="/templates/block_delete?name={{ current_key }}&index={{ loop.index0 }}"

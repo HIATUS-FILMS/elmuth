@@ -135,9 +135,11 @@ def template_add_block(template_key, form_data):
     templates = templates_soft()
     
     if template_key in templates:
-        from_val = form_data.get("from", "").split("/")
-        family = from_val[0].strip() if len(from_val) > 0 else "N/A"
-        b_type = from_val[1].strip() if len(from_val) > 1 else "N/A"
+        criteria_type = form_data.get("criteria_type", "family")
+        criteria_value = form_data.get("criteria_value", "N/A")
+        
+        family = criteria_value if criteria_type == "family" else "N/A"
+        b_type = criteria_value if criteria_type == "type" else "N/A"
         
         new_block = {
             "description": form_data.get("block-description", ""),
@@ -157,7 +159,6 @@ def template_add_block(template_key, form_data):
         }
         
         templates[template_key]["blocks"].append(new_block)
-        
         templates[template_key]["blocks"].sort(key=lambda x: x.get("time_start", "00:00:00"))
         
         with open(file_path, 'w', encoding='utf-8') as f:

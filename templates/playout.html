@@ -116,7 +116,11 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
 
                     <div class="flex gap-2 mt-2">
 
-                        <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                        <button type="button"
+                        hx-post="/playout/playlist_copy"
+                        hx-include="#copy-date, #playlist-date"
+                        hx-confirm="Overwrite the current playlist?"
+                        class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
                             <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M0 0h24v24H0z" fill="none" />
                             <rect width="14" height="14" x="8" y="2" fill="currentColor" rx="2" ry="2" />
@@ -135,7 +139,11 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                     <div class="flex items-center justify-between gap-2">
                         <label for="template-select" class="block mb-1 text-sm font-medium text-heading">Select template</label>
                         <select id="template-select" class="py-1.5 w-32 bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
-                            <option value="">-- Blank --</option>
+                            {% for key, tpl in templates.items() %}
+                            <option value="{{ key }}">{{ tpl.name }}</option>
+                            {% else %}
+                            <option value="">No template</option>
+                            {% endfor %}
                         </select>
                     </div>
 
