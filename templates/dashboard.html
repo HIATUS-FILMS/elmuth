@@ -5,15 +5,15 @@
     
     {% include 'modules/navbar.html' %}
 
-    <div class="gap-2 p-1 flex mb-4">
+    <div class="gap-1 p-1 flex mb-1">
         <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-zinc-300 uppercase font-semibold">Time</p>
+            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Time</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p id="time" style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
             </div>
         </div>
         <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-zinc-300 uppercase font-semibold">Remaining time (Playlist)</p>
+            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Remaining time (Playlist)</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
             </div>
@@ -36,11 +36,32 @@
                 <p id="media-title"></p>
                 <p id="media-duration"></p>
             </div>
-            <div class="bg-black aspect-video rounded-xl border border-zinc-800 flex items-center justify-center relative overflow-hidden group">
-                
-                <div class="bg-black aspect-video rounded-xl border border-zinc-800 flex items-center justify-center relative overflow-hidden group w-full">
-                    <video id="videoPlayer" class="w-full h-full object-cover rounded-lg" controls autoplay></video>
-                </div>
+            <div class="bg-black aspect-video rounded-xl border border-zinc-800 relative overflow-hidden w-full flex items-center justify-center">
+                <video id="hls-video" controls autoplay muted class="w-full h-full object-contain"></video>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var video = document.getElementById('hls-video');
+                    var videoSrc = 'http://127.0.0.1:8787/public/1/live/stream.m3u8';
+                    
+                    if (Hls.isSupported()) {
+                        var hls = new Hls();
+                        hls.loadSource(videoSrc);
+                        hls.attachMedia(video);
+                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                            video.play().catch(err => console.log("Autoplay :", err));
+                        });
+                        hls.on(Hls.Events.ERROR, function(event, data) {
+                            console.error("Error HLS.js :", data);
+                        });
+                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                        video.src = videoSrc;
+                        video.addEventListener('loadedmetadata', function() {
+                            video.play();
+                        });
+                    }
+                });
+                </script>
             </div>
 
             <div class="mt-4 space-y-2 bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4">

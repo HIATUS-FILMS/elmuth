@@ -28,7 +28,13 @@
 
 
             <li class="flex-1 mr-2">
-                <a class="block py-1 px-4 text-zinc-400 cursor-not-allowed" href="#">Templates</a>
+                <a class="text-center block rounded-full py-1 px-4 transition-colors duration-200 
+                    {% if request.path == '/templates' %}
+                        border border-zinc-500 bg-zinc-900 text-zinc-200 hover:bg-transparent
+                    {% else %}
+                        text-zinc-400 hover:bg-zinc-900
+                    {% endif %}" 
+                   href="/templates">Templates</a>
             </li>
 
 

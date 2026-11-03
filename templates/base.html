@@ -12,12 +12,15 @@
         integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
         crossorigin="anonymous"></script>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&family=Bitcount:wght@100..900&display=swap');
+    @font-face {
+        font-family: 'Bitcount Single';
+        src: url("{{ url_for('static', filename='fonts/Bitcount_Single/BitcountSingle.ttf') }}") format('truetype');
+    }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 
-<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+<body class="bg-zinc-950 text-zinc-100 h-screen overflow-hidden">
 
     {% block content %}{% endblock %} <!--jinja call for content-->
 

@@ -14,6 +14,7 @@ from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
 from planifier import playlist_register, prepare_items
+from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block
 
 app = Flask(__name__)
 
@@ -452,6 +453,128 @@ def webserver():
             print(f"Error while filtering media database : {e}")
 
         return render_template('modules/mam_items.html', medias=medias_list)
+    
+    @app.route('/templates', methods=['GET', 'POST'])
+    @flask_login.login_required
+    def templates_page():
+
+        template_info = templates_soft()
+
+        return render_template('templates.html', templates=template_info)
+
+    @app.route('/templates/create', methods=['POST'])
+    @flask_login.login_required
+    def templates_create():
+        template_data = template_create_new()
+        return render_template('modules/templates_items.html', templates=template_data)
+
+    @app.route('/templates/select', methods=['GET'])
+    @flask_login.login_required
+    def templates_select():
+        template_key = request.args.get('name')
+        template_info = templates_soft()
+        data = template_info.get(template_key, {})
+        
+        last_end = "00:00:00"
+        is_full = False
+        if data and data.get("blocks"):
+            last_end = data["blocks"][-1].get("time_end", "00:00:00")
+            if last_end == "00:00:00" and len(data["blocks"]) > 0:
+                is_full = True
+
+        try:
+            t = datetime.datetime.strptime(last_end, "%H:%M:%S")
+            new_t = t + datetime.timedelta(hours=1)
+            if last_end >= "23:00:00":
+                next_time = "00:00:00"
+            else:
+                next_time = new_t.strftime("%H:%M:%S")
+        except:
+            next_time = "01:00:00"
+
+        editor_module = render_template('modules/templates_editor.html', data=data, current_key=template_key)
+
+        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
+        
+        return editor_module + inspector_module
+
+    @app.route('/templates/save', methods=['POST'])
+    @flask_login.login_required
+    def templates_save():
+        template_key = request.form.get('template_key')
+        template_save_data(request.form, template_key)
+        return redirect('/templates')
+
+    @app.route('/templates/delete', methods=['POST'])
+    @flask_login.login_required
+    def templates_delete_route():
+        template_key = request.form.get('template_key')
+        template_delete(template_key)
+        return redirect('/templates')
+
+    @app.route('/templates/block_add', methods=['POST'])
+    @flask_login.login_required
+    def templates_block_add_route():
+        template_key = request.form.get('template_key')
+        template_add_block(template_key, request.form)
+        
+        template_info = templates_soft()
+        data = template_info.get(template_key, {})
+        
+        last_end = "00:00:00"
+        is_full = False
+        if data and data.get("blocks"):
+            last_end = data["blocks"][-1].get("time_end", "00:00:00")
+            if last_end == "00:00:00" and len(data["blocks"]) > 0:
+                is_full = True
+
+        try:
+            t = datetime.datetime.strptime(last_end, "%H:%M:%S")
+            new_t = t + datetime.timedelta(hours=1)
+            if last_end >= "23:00:00":
+                next_time = "00:00:00"
+            else:
+                next_time = new_t.strftime("%H:%M:%S")
+        except:
+            next_time = "01:00:00"
+            
+        editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
+        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
+        
+        return editor_html + inspector_module
+
+    @app.route('/templates/block_delete', methods=['POST'])
+    @flask_login.login_required
+    def templates_block_delete_route():
+        template_key = request.args.get('name')
+        block_index = int(request.args.get('index', 0))
+        
+        template_delete_block(template_key, block_index)
+        
+        template_info = templates_soft()
+        data = template_info.get(template_key, {})
+
+        last_end = "00:00:00"
+        is_full = False
+        if data and data.get("blocks"):
+            last_end = data["blocks"][-1].get("time_end", "00:00:00")
+            if last_end == "00:00:00" and len(data["blocks"]) > 0:
+                is_full = True
+
+        try:
+            t = datetime.datetime.strptime(last_end, "%H:%M:%S")
+            new_t = t + datetime.timedelta(hours=1)
+            if last_end >= "23:00:00":
+                next_time = "00:00:00"
+            else:
+                next_time = new_t.strftime("%H:%M:%S")
+        except:
+            next_time = "01:00:00"
+            
+        editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
+        inspector_module = render_template('modules/templates_inspector.html', data=data, current_key=template_key, last_end=last_end, next_time=next_time, is_full=is_full, oob=True)
+
+        return editor_html + inspector_module
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)

@@ -12,34 +12,34 @@ I would like to remind you that you should wait AT LEAST until the alpha 1 versi
 testing elmuth, and wait until the final 1.0 release before using it in production.
 -->
 
-<div class="bg-transparent text-zinc-100 min-h-screen flex flex-col font-sans">
+<div class="bg-transparent text-zinc-100 h-full flex flex-col font-sans">
     
     {% include 'modules/navbar.html' %}
 
-    <div class="gap-2 p-1 flex mb-4">
+    <div class="gap-1 p-1 flex mb-1">
         <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-zinc-300 uppercase font-semibold">Time</p>
+            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Time</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p id="time" style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
             </div>
         </div>
         <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-zinc-300 uppercase font-semibold">Remaining time (Playlist)</p>
+            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Remaining time (Playlist)</p>
             <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
                 <p style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
             </div>
         </div>
     </div>
 
-    <main class="grid grid-cols-12 gap-4 p-1 flex-1">
+    <main class="grid grid-cols-12 gap-4 p-1 flex-1 min-h-0">
         
 {% include "modules/mam.html" %}
 
         <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/6">
-                    <p class="block mb-1 text-sm font-medium text-heading" id="diffusion-header">
-                        Diffusion - {{ selected_date or 'XX/XX/20XX' }}
+                    <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3" id="diffusion-header">
+                        Diffusion: {{ selected_date or 'XX/XX/20XX' }}
                     </p>
                 </div>
                 <div class="w-1/6">
@@ -75,7 +75,7 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                     <button hx-post="/playout/playlist_clear"
                             hx-include="#playlist-date"
                             hx-target="#playlist-container"
-                            class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                            class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
                         <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
                             <path d="M0 0h14v14H0z" fill="none" />
                             <path fill="currentColor" fill-rule="evenodd" d="M7.106.087a.75.75 0 0 1 .413.977L4.8 7.779c.354.124.714.312 1.03.564c.55.439.998 1.1.998 1.979c0 .535.131.98.33 1.344c.318.584 1.016.793 1.682.793a.75.75 0 0 1 0 1.5h-.09v.01H2.251c-1.048 0-2.154-.701-2.182-1.925c-.023-1.026.195-2.193.815-3.084c.52-.747 1.303-1.27 2.368-1.361L6.13.5a.75.75 0 0 1 .977-.413m6.075 13.872a.75.75 0 0 0 0-1.5h-1.927a.75.75 0 1 0 0 1.5zm-.142-3.472a.75.75 0 0 1-.75.75h-1.916a.75.75 0 1 1 0-1.5h1.916a.75.75 0 0 1 .75.75m-1.785-2.073a.75.75 0 0 0 0-1.5H9.338a.75.75 0 1 0 0 1.5z" clip-rule="evenodd" />
@@ -84,7 +84,7 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
                     </button>
                 </div>
                 <div class="w-1/6">
-                <a href="/playout/playlist_download" onclick="this.href='/playout/playlist_download?playlist_date=' + document.getElementById('playlist-date').value;" class="flex bg-transparent border border-slate-800/80 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                <a href="/playout/playlist_download" onclick="this.href='/playout/playlist_download?playlist_date=' + document.getElementById('playlist-date').value;" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
                     <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M0 0h24v24H0z" fill="none" />
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.777a3 3 0 0 0 2.121 2.121C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C21 18.395 21 17.93 21 17m-4.5-5.5S13.186 16 12 16s-4.5-4.5-4.5-4.5M12 15V3" />
@@ -99,55 +99,76 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
             </div>
         </section>
 
-        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px] overflow-y-auto">
+        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px]">
             
             <div>
-                <p class="block mb-1 text-sm font-medium text-heading" id="diffusion-header">Inspector</p>
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3" id="diffusion-header">Inspector</p>
             </div>
 
-            <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
-                <p class="text-sm font-medium text-heading mb-1">Playlist tools</p>
-                
-                <div class="flex items-center justify-between gap-2">
-                    <label for="copy-date" class="block mb-1 text-sm font-medium text-heading">Copy from another date</label>
-                    <input type="date" id="copy-date" name="copy_date" class="py-1.5 w-32 bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text" placeholder="09/10/2026">
-                </div>
+            <div class="flex flex-col gap-4 overflow-y-auto flex-1 pr-1">
+                <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                    <p class="text-sm font-medium text-heading mb-1">Copy from another date</p>
+                    
+                    <div class="flex items-center justify-between gap-2">
+                        <label for="copy-date" class="block mb-1 text-sm font-medium text-heading">Playlist date</label>
+                        <input type="date" id="copy-date" name="copy_date" class="py-1.5 w-32 bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner" type="text" placeholder="09/10/2026">
+                    </div>
 
-                <div class="flex items-center justify-between gap-2">
-                    <label for="template-select" class="block mb-1 text-sm font-medium text-heading">Generate from template</label>
-                    <select id="template-select" class="py-1.5 w-32 bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
-                        <option value="">-- Blank --</option>
-                    </select>
-                </div>
+                    <div class="flex gap-2 mt-2">
 
-                <div class="flex gap-2 mt-2">
-                    <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 28 28">
-                            <path d="M0 0h28v28H0z" fill="none" />
-                            <path fill="currentColor" d="M5.99 3a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2h-1.995a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm9.08 3.543l3.86 15.483a2 2 0 0 1-1.457 2.425l-1.963.49a2 2 0 0 1-2.424-1.458L16.226 8a2 2 0 0 1 1.456-2.425l1.963-.489a2 2 0 0 1 2.425 1.457" />
-                        </svg>
-                        <span>Templates</span>
-                    </button>
-                    <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M0 0h24v24H0z" fill="none" />
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.776a3 3 0 0 0 2.121 2.122C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.122C21 18.396 21 17.93 21 17m-4.5-9.5S13.186 3 12 3S7.5 7.5 7.5 7.5M12 4v12" />
-                        </svg>
-                        <span>Upload</span>
-                    </button>
-                    <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
-                        <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12l6 6L20 6" />
-                        </svg>
-                        <span>Apply</span>
-                    </button>
+                            <rect width="14" height="14" x="8" y="2" fill="currentColor" rx="2" ry="2" />
+                            <path fill="currentColor" d="M8.5 18A2.5 2.5 0 0 1 6 15.5V8H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2z" />
+                            </svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
                 </div>
+
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Dynamic playlist generator</p>
+
+                <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                    <p class="text-sm font-medium text-heading mb-1">Generate from template</p>
+
+                    <div class="flex items-center justify-between gap-2">
+                        <label for="template-select" class="block mb-1 text-sm font-medium text-heading">Select template</label>
+                        <select id="template-select" class="py-1.5 w-32 bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                            <option value="">-- Blank --</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="window.location='/templates'" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path fill="currentColor" d="M6 3h12a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3m0 9h4a3 3 0 0 1 3 3v3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-3a3 3 0 0 1 3-3m15 3v3a3 3 0 1 1-6 0v-3a3 3 0 1 1 6 0" />
+                            </svg>
+                            <span>Templates</span>
+                        </button>
+                        <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M0 0h24v24H0z" fill="none" />
+                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 17c0 .93 0 1.395.102 1.776a3 3 0 0 0 2.121 2.122C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.122C21 18.396 21 17.93 21 17m-4.5-9.5S13.186 3 12 3S7.5 7.5 7.5 7.5M12 4v12" />
+                            </svg>
+                            <span>Upload</span>
+                        </button>
+                        <button class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                            <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M0 0h16v16H0z" fill="none" />
+                            <path fill="currentColor" d="M6.5 8.75L9 10l-2.5 1.25L5 15l-1.5-3.75L1 10l2.5-1.25L5 5zM10 12a1 1 0 1 1 0 2a1 1 0 0 1 0-2m3-3a1 1 0 1 1 0 2a1 1 0 0 1 0-2m.269-5.692L15 4l-1.731.691L12.5 7l-.77-2.309L10 4l1.73-.692L12.5 1zM3 2a1 1 0 1 1 0 2a1 1 0 0 1 0-2" />
+                            </svg>
+                            <span>Generate</span>
+                        </button>
+                    </div>
+                </div>
+
+            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Media editor</p>
+
+            {% include "modules/inspector.html" %}
             </div>
 
-
-
-        {% include "modules/inspector.html" %}
 
 
 

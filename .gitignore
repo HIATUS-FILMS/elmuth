@@ -1,6 +1,7 @@
 # Custom auto-generated folders
 settings/
 databases/
+programs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
