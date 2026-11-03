@@ -33,9 +33,9 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
 
     <main class="grid grid-cols-12 gap-4 p-1 flex-1 min-h-0">
         
-{% include "modules/mam.html" %}
+{% include "modules/playout_mam.html" %}
 
-        <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+        <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-full min-h-0">
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/6">
                     <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3" id="diffusion-header">
@@ -95,11 +95,11 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
             </div>
 
             <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl overflow-y-auto mt-3" id="playlist-container">
-                {% include "modules/playlist_table.html" %}
+                {% include "modules/playout_editor.html" %}
             </div>
         </section>
 
-        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px]">
+        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-full min-h-0">
             
             <div>
                 <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3" id="diffusion-header">Inspector</p>
@@ -174,7 +174,7 @@ testing elmuth, and wait until the final 1.0 release before using it in producti
 
             <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Media editor</p>
 
-            {% include "modules/inspector.html" %}
+            {% include "modules/playout_inspector.html" %}
             </div>
 
 

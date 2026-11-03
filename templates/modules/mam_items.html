@@ -1,5 +1,5 @@
 {% for m in medias %}
-<label class="p-3 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 transition flex items-center justify-between gap-4 group cursor-pointer has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400" data-source="{{ m.filename }}">
+<label class="relative p-3 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 transition flex items-center justify-between gap-4 group cursor-pointer has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400" data-source="{{ m.filename }}">
 
     <input type="radio" name="selected" value="mam" class="sr-only"
         hx-get="/playout/inspect?name={{ m.filename | urlencode }}"

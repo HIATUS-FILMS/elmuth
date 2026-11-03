@@ -94,9 +94,9 @@ def playlist_register(app):
         playlist_items = prepare_items(fetch_api_items(select_date), select_date)
 
         if request.headers.get('HX-Request'):
-            return render_template('modules/playlist_table.html', playlist=playlist_items, selected_date=select_date)
+            return render_template('modules/playout_editor.html', playlist=playlist_items, selected_date=select_date)
 
-        return render_template('playout.html', playlist=playlist_items, selected_date=select_date)
+        return redirect(f"/playout?playlist_date={select_date}")
 
     @app.route('/playout/playlist_edit', methods=['POST'])
     @flask_login.login_required
@@ -182,7 +182,7 @@ def playlist_register(app):
 
         selected_date = request.form.get("playlist_date") or request.args.get("date") or datetime.date.today().strftime('%Y-%m-%d')
 
-        return render_template('modules/playlist_table.html',
+        return render_template('modules/playout_editor.html',
                        playlist=prepare_items(fetch_api_items(selected_date), selected_date),
                        selected_date=selected_date)
 
@@ -229,7 +229,7 @@ def playlist_register(app):
             with connect_db() as db:
                 media = db.execute("SELECT * FROM media WHERE filename = ?", (name,)).fetchone()
         
-        return render_template('modules/inspector.html', media=media, types=get_distinct_values("type"), families=get_distinct_values("fam"))
+        return render_template('modules/playout_inspector.html', media=media, types=get_distinct_values("type"), families=get_distinct_values("fam"))
 
     @app.route('/playout/playlist_draft_delete', methods=['POST'])
     @flask_login.login_required
@@ -289,7 +289,7 @@ def playlist_register(app):
                 else:
                     item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
             
-        return render_template('modules/playlist_table.html', playlist=prepare_items(api_items, selected_date), selected_date=selected_date)
+        return render_template('modules/playout_editor.html', playlist=prepare_items(api_items, selected_date), selected_date=selected_date)
 
     @app.route('/playout/playlist_clear', methods=['POST'])
     @flask_login.login_required
@@ -304,7 +304,7 @@ def playlist_register(app):
         session['draft_deleted'] = {"date": selected_date, "indices": list(range(len(api_items)))}
         session.modified = True
 
-        return render_template('modules/playlist_table.html',
+        return render_template('modules/playout_editor.html',
                             playlist=prepare_items(api_items, selected_date),
                             selected_date=selected_date)
 
