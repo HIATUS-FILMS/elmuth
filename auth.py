@@ -1,1 +1,0 @@
-# That part will auth elmuth to ffplayout to grab auth token, and some other things
