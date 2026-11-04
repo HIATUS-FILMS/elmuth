@@ -22,23 +22,7 @@ default_templates = {
         "preferred_days": ["Mo", "Tu", "We", "Th", "Fr"],
         "first_aired": "N/A",
         "last_aired": "N/A",
-        "blocks": [
-            {
-            "description": "This is an example block",
-            "family": "N/A",
-            "type": "N/A",
-            "time_start": "00:00:00",
-            "time_end": "06:00:00",
-            "options": {
-                "shuffle": True,
-                "prefer_recent": True,
-                "hard_cut": False,
-                "loop": False,
-                "fillers": True,
-                "strict_order": False
-            }
-            }
-        ]
+        "blocks": []
     }
 }
 

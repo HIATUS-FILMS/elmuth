@@ -23,6 +23,13 @@ default_config = {
     "db": {
         "auth_path": "databases/auth.db",
     },
+    "engine": {
+        "filler_type": "Filler",
+        "jingle_type": "Jingle",
+        "stretch_families": ["Still"],
+        "intro_family": "Intro",
+        "outro_family": "Outro",
+    },
 }
 
 def config_soft(): #function to verify if config.json exists, and generates it if not

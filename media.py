@@ -40,16 +40,28 @@ def init_db():
     ''')
     connect.commit()
     connect.close()
+    migrate_db()
 
-def write_db(name, path, length):
+def migrate_db():
+    connect = connect_db()
+    cols = {r["name"] for r in connect.execute("PRAGMA table_info(media)")}
+    if "duration" not in cols:
+        connect.execute("ALTER TABLE media ADD COLUMN duration REAL")
+    connect.commit()
+    connect.close()
 
+def write_db(name, path, length, duration):
     try:
         with connect_db() as authdb:
-            cursor_auth = authdb.cursor()
-            cursor_auth.execute(("INSERT OR IGNORE INTO media (filename, filepath, length) values (?, ?, ?)"), (name, path, length))
-            authdb.commit()
+            authdb.execute(
+                """INSERT INTO media (filename, filepath, length, duration) VALUES (?, ?, ?, ?)
+                   ON CONFLICT(filename) DO UPDATE SET
+                       filepath = excluded.filepath,
+                       length = excluded.length,
+                       duration = excluded.duration""",
+                (name, path, length, float(duration)))
     except Exception as e:
-        print(f"An error occured while creating the table:{e}")
+        print(f"An error occured while writing the media:{e}")
 
 def get_data(source_path):
     headers = ffheaders()
@@ -94,7 +106,7 @@ def media_agent(path_current=""):
             else:
                 length_formatted = f"{minutes:02d}:{seconds:02d}"
 
-            write_db(name, path_current, length_formatted)
+            write_db(name, path_current, length_formatted, duration_sec)
 
         else:
             print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} is not compatible (Wrong file extension)" + bcolors.ENDC)
