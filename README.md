@@ -1,33 +1,40 @@
-![Logo](static/img/logo.png)
+<div align="center">
 
-elmuth - for ffplayout
-===============
+![Banner](https://github.com/user-attachments/assets/669348c4-343f-4c6b-9d05-1588ef194b6d)
+
+<h2>Broadcast video production software and a media asset management for ffplayout</h2>
+
+Elmuth aims to manage a television playout system capable of scheduling a broadcast lineup. It is designed to work with ffplayout.
+
+![](https://img.shields.io/badge/Recommended%20platform%20-Linux-red?style=flat)
+![](https://img.shields.io/badge/Language-Python-blue?style=flat)
+![](https://img.shields.io/badge/License-GPL--3.0-green?style=flat)
+![](https://img.shields.io/badge/PRs-Accepted-yellow?style=flat)
+
+</div>
+
+## Informations
 
 > [!CAUTION]
 > elmuth is not ready for production; use it only for testing purposes.
 
-Elmuth aims to manage a television playout system capable of scheduling a broadcast lineup. It is designed to work with ffplayout.
-
 Originally conceived for a French WebTV project, the project aims to follow a roadmap that will enable it to serve a wider variety of projects while making the technology accessible to as many people as possible.
 
-![Project](http://www.image-heberg.fr/files/1790018688165833045.png)
+![Screenshot](https://github.com/user-attachments/assets/f8a30aa8-3277-4d82-be4a-701ee87e83ee)
 
-What is the current status of elmuth's development?
--------------------
+## What is the current status of elmuth's development?
 
 The project is still in its early stages, and the first pre-alpha versions should be released within a few weeks or months.
 
 Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, CSS and Javascript code.
 
-Is AI accepted in code ?
--------------------
+## Is AI accepted in code ?
 
 Currently, the use of AI is not permitted for designing critical parts of the code. These tools are only allowed during the debugging phase. This measure has been taken to avoid any issues related to code that is not understood or is copyrighted, as well as security concerns.
 
 If you need to use it to fix bugs or resolve an issue, we recommend using local AI whenever possible in this context.
 
-License
--------------------
+## License
 elmuth is distributed under the GNU General Public License GPLv3, see LICENSE file for details.
 
 elmuth uses the following third party libraries :
@@ -52,8 +59,7 @@ elmuth uses the following third party libraries :
   
 *Software license list by pip-licenses 5.5.5 (MIT License)*
 
-Roadmap (For v1.0)
--------------------
+## Roadmap (For v1.0)
 
 * Software base
 - [x] Config file & database support

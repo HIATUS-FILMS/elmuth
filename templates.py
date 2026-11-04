@@ -30,7 +30,7 @@ default_templates = {
             "time_end": "06:00:00",
             "options": {
                 "shuffle": True,
-                "exclude_recent": True,
+                "prefer_recent": True,
                 "hard_cut": False,
                 "loop": False,
                 "fillers": True,
@@ -150,7 +150,7 @@ def template_add_block(template_key, form_data):
             "color": form_data.get("color", "bg-rose-500"),
             "options": {
                 "shuffle": 'shuffle' in form_data,
-                "exclude_recent": 'exclude_recent' in form_data,
+                "prefer_recent": 'prefer_recent' in form_data,
                 "hard_cut": 'hard_cut' in form_data,
                 "loop": 'loop' in form_data,
                 "fillers": 'jingles' in form_data,

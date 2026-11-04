@@ -110,7 +110,7 @@
             </div>
 
             <div class="flex flex-wrap gap-x-3 gap-y-1.5 text-xs font-medium text-zinc-200">
-                {% for opt in [('shuffle','Shuffle'),('exclude_recent','Exclude recent'),('hard_cut','Hard cut'),('loop','Loop'),('jingles','Add jingles/fillers'),('strict','Strict order')] %}
+                {% for opt in [('shuffle','Shuffle'),('prefer_recent','Prefer recent'),('hard_cut','Hard cut'),('loop','Loop'),('jingles','Add jingles/fillers'),('strict','Strict order')] %}
                 <label class="flex items-center gap-1 cursor-pointer">
                     <input type="checkbox" name="{{ opt[0] }}" class="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-950 accent-mauve-500">
                     <span>{{ opt[1] }}</span>
