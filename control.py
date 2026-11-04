@@ -14,7 +14,7 @@ from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
 from planifier import playlist_register, prepare_items, get_distinct_values
-from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block
+from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block, get_media_list_by_family
 
 app = Flask(__name__)
 
@@ -532,6 +532,9 @@ def webserver():
 
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
+        
+        intros_list = get_media_list_by_family("Intro")
+        outros_list = get_media_list_by_family("Outro")
 
         editor_module = render_template('modules/templates_editor.html', data=data, current_key=template_key)
 
@@ -544,6 +547,8 @@ def webserver():
             is_full=is_full, 
             families=families_list, 
             types=types_list,
+            intros=intros_list,
+            outros=outros_list,
             oob=True
         )
 
@@ -592,6 +597,9 @@ def webserver():
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
 
+        intros_list = get_media_list_by_family("Intro")
+        outros_list = get_media_list_by_family("Outro")
+
         editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
         
         inspector_module = render_template(
@@ -603,6 +611,8 @@ def webserver():
             is_full=is_full, 
             families=families_list, 
             types=types_list,
+            intros=intros_list,
+            outros=outros_list,
             oob=True
         )
         
@@ -639,6 +649,10 @@ def webserver():
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
 
+        intros_list = get_media_list_by_family("Intro")
+        outros_list = get_media_list_by_family("Outro")
+
+
         editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
         
         inspector_module = render_template(
@@ -650,6 +664,8 @@ def webserver():
             is_full=is_full, 
             families=families_list, 
             types=types_list,
+            intros=intros_list,
+            outros=outros_list,
             oob=True
         )
 

@@ -43,12 +43,12 @@
             
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/2">
-                    <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                    <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
                         Save
                     </button>
                 </div>
                 <div class="w-1/2">
-                    <button type="submit" formaction="/templates/delete" class="flex bg-red-950/60 border border-red-900/50 hover:bg-red-900 text-red-400 border font-medium py-2 px-4 rounded-full w-full items-center justify-center">
+                    <button type="submit" formaction="/templates/delete" class="flex bg-red-950/60 border border-red-900/50 hover:bg-red-900 text-red-400 border font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
                         <svg class="mr-2 w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -109,13 +109,73 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-x-3 gap-y-1.5 text-xs font-medium text-zinc-200">
-                {% for opt in [('shuffle','Shuffle'),('prefer_recent','Prefer recent'),('hard_cut','Hard cut'),('loop','Loop'),('jingles','Add jingles/fillers'),('strict','Strict order')] %}
-                <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" name="{{ opt[0] }}" class="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-950 accent-mauve-500">
-                    <span>{{ opt[1] }}</span>
-                </label>
-                {% endfor %}
+            <div class="flex flex-col gap-1.5">
+                <label class="block text-xs font-semibold text-heading relative">Playback mode / sorting</label>
+                <div class="grid grid-cols-3 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="playback_mode" value="shuffle" class="sr-only" onfocus="this.blur()">
+                        Shuffle
+                    </label>
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="playback_mode" value="recent" checked class="sr-only" onfocus="this.blur()">
+                        Recent
+                    </label>
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="playback_mode" value="strict" class="sr-only" onfocus="this.blur()">
+                        Strict
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div class="flex flex-col gap-1">
+                    <label for="intro-media" class="block text-xs font-semibold text-heading">Intro media</label>
+                    <select id="intro-media" name="intro_media"
+                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                        <option value="">None (No intro)</option>
+                        {% for intro in intros %}
+                        <option value="{{ intro }}">{{ intro }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="outro-media" class="block text-xs font-semibold text-heading">Outro media</label>
+                    <select id="outro-media" name="outro_media"
+                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                        <option value="">None (No outro)</option>
+                        {% for outro in outros %}
+                        <option value="{{ outro }}">{{ outro }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="block text-xs font-semibold text-heading relative">Repeat media policy</label>
+                <div class="grid grid-cols-2 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="recent_policy" value="exclude_recent" checked class="sr-only" onfocus="this.blur()">
+                        Exclude recent
+                    </label>
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="recent_policy" value="accept_repeat" class="sr-only" onfocus="this.blur()">
+                        Accept repeat
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="block text-xs font-semibold text-heading relative">Transition mode</label>
+                <div class="grid grid-cols-2 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="transition_mode" value="hard" class="sr-only" onfocus="this.blur()">
+                        Hard cut
+                    </label>
+                    <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
+                        <input type="radio" name="transition_mode" value="smooth" checked class="sr-only" onfocus="this.blur()">
+                        Smooth cut
+                    </label>
+                </div>
             </div>
 
             <div>
@@ -131,7 +191,7 @@
             </div>
 
             <button type="submit" {% if is_full %}disabled{% endif %} 
-                    class="flex bg-transparent border border-zinc-800/80 {% if is_full %}opacity-50 cursor-not-allowed bg-zinc-950/50 text-zinc-500 border-zinc-900{% else %}hover:bg-zinc-700 text-white cursor-pointer{% endif %} font-medium py-2 px-4 rounded-full w-full items-center justify-center transition">
+                    class="flex bg-transparent border border-zinc-800/80 {% if is_full %}opacity-50 cursor-not-allowed bg-zinc-950/50 text-zinc-500 border-zinc-900{% else %}hover:bg-zinc-700 text-white cursor-pointer{% endif %} font-medium py-2 px-4 rounded-lg w-full items-center justify-center transition">
                 {% if is_full %}Template full (24h filled){% else %}Add{% endif %}
             </button>
         </form>

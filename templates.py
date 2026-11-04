@@ -4,6 +4,7 @@ import os
 import requests
 import datetime
 import json
+import sqlite3
 from bcolors import bcolors
 from flask import render_template, request, jsonify, session, Response, redirect, Blueprint
 from ffplayout import readaddress, readid, ffheaders
@@ -148,13 +149,13 @@ def template_add_block(template_key, form_data):
             "time_start": form_data.get("start", "00:00:00"),
             "time_end": form_data.get("end", "00:00:00"),
             "color": form_data.get("color", "bg-rose-500"),
+            "intro_media": form_data.get("intro_media", ""),
+            "outro_media": form_data.get("outro_media", ""),
             "options": {
-                "shuffle": 'shuffle' in form_data,
-                "prefer_recent": 'prefer_recent' in form_data,
-                "hard_cut": 'hard_cut' in form_data,
-                "loop": 'loop' in form_data,
-                "fillers": 'jingles' in form_data,
-                "strict_order": 'strict' in form_data
+                "playback_mode": form_data.get("playback_mode", "shuffle"),
+                "recent_policy": form_data.get("recent_policy", "exclude_recent"),
+                "transition_mode": form_data.get("transition_mode", "hard"),
+                "loop": 'loop' in form_data
             }
         }
         
@@ -178,3 +179,15 @@ def template_delete_block(template_key, block_index):
                 json.dump(templates, f, indent=4, ensure_ascii=False)
                 
     return templates
+
+def get_media_list_by_family(fam_name):
+    medias = []
+    try:
+        with sqlite3.connect("databases/medias.db") as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT filename FROM media WHERE fam = ?", (fam_name,))
+            medias = [row["filename"] for row in cursor.fetchall()]
+    except Exception as e:
+        print(f"Error reading media database for family {fam_name}: {e}")
+    return medias
