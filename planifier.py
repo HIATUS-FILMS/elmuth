@@ -105,6 +105,15 @@ def find_current_index(items, current_media, planned_starts): #finds which item 
     #a repeated media (a logo for example) can be anywhere, so the closest to the planned time wins
     return min(same_source, key=lambda position: abs(planned_starts[position] - get_playing_seconds()))
 
+def get_planned_starts(items): #planned start of every item, from the start of the playlist
+    planned_clock = get_day_start_seconds()
+    planned_starts = []
+    for item in items:
+        planned_starts.append(planned_clock)
+        if not item.get("pending_delete"): #an item about to be deleted takes no time
+            planned_clock += get_item_length(item)
+    return planned_starts
+
 def add_airing_times(items, date): #estimates the airing time of every item
     planned_clock = get_day_start_seconds()
     planned_starts = []

@@ -13,7 +13,7 @@ from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_
 from databases import db_connect
 from config import config_soft
 from media import init_db, media_agent
-from planifier import playlist_register, prepare_items, get_distinct_values
+from planifier import playlist_register, prepare_items, get_distinct_values, find_current_index, get_planned_starts, get_item_length
 from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block, get_media_list_by_family
 
 app = Flask(__name__)
@@ -291,27 +291,30 @@ def webserver():
 
         if playlist_data:
             items = playlist_data.get("program", []) #extract every media in "program" row
-            cur_media = getinfo_current_media()["media"]["source"] #we store the current playing media location
-            
-            for item in items: #chunk of code looping on each media on the list
+            current_media = getinfo_current_media() #what ffplayout is playing right now
+            current_index = None
+            if current_media: #nothing is current if ffplayout is stopped
+                current_index = find_current_index(items, current_media, get_planned_starts(items)) #position of the media on air, so a repeated media is only current once
+
+            for item_position, item in enumerate(items): #chunk of code looping on each media on the list
                 if "source" in item: #checking if the element contains "source" key
-                    item["is_current"] = (item["source"] == cur_media) #compare item source with current media playing source
+                    item["is_current"] = (item_position == current_index) #only the item at the position on air is current
                     file_path = item["source"]
                     file_name = os.path.splitext(os.path.basename(file_path))[0]
                     item["title"] = file_name
-                    if "duration" in item:
-                        total_seconds = int(item["duration"])
-                        hours = total_seconds // 3600
-                        minutes = (total_seconds % 3600) // 60
-                        seconds = total_seconds % 60
-                        
-                        if hours > 0:
-                            item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-                        else:
-                            item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
-            
+
+                    total_seconds = int(round(get_item_length(item))) #airing length, a stretched or cut item is not as long as its file
+                    hours = total_seconds // 3600
+                    minutes = (total_seconds % 3600) // 60
+                    seconds = total_seconds % 60
+
+                    if hours > 0:
+                        item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                    else:
+                        item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
+
             return render_template('modules/playlist.html', playlist=items)
-            
+
         return jsonify({"error": "Unable to fetch your data"}), 500
 
     @app.route('/stream/<path:filename>')
