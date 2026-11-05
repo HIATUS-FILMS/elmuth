@@ -1,0 +1,26 @@
+<div id="templates-list-container" class="space-y-2 overflow-y-auto flex-1 text-xs text-zinc-400 w-full py-2">
+    {% for key, data in templates.items() %}
+    <label class="p-2.5 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 cursor-pointer block transition group has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400">
+        
+        <input type="radio" name="selected_template" value="{{ key }}" class="sr-only"
+            hx-get="/templates/select?name={{ key }}"
+            hx-trigger="change"
+            hx-target="#template-editor-container"
+            hx-swap="outerHTML">
+
+        <p class="text-zinc-300 font-medium truncate">{{ data.name }}</p>
+        
+        <p class="text-[10px] text-zinc-500">
+            Preferred days : {{ data.preferred_days | join(', ') }}
+        </p>
+        
+        <p class="text-[10px] text-zinc-500 truncate">
+            {{ data.description | default('Description') }}
+        </p>
+        
+        <p class="text-[10px] text-zinc-500">
+            First aired : {{ data.first_aired }} / Last aired : {{ data.last_aired }}
+        </p>
+    </label>
+    {% endfor %}
+</div>

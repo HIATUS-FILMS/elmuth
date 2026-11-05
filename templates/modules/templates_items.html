@@ -5,9 +5,9 @@
     <div class="w-1/2">
         <button type="button" 
                 hx-post="/templates/create" 
-                hx-target="#media-list" 
+                hx-target="#templates-list-container" 
                 hx-swap="innerHTML"
-                class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
+                class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center cursor-pointer">
                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
@@ -16,29 +16,4 @@
     </div>
 </div>
 
-<div id="media-list" class="space-y-2 overflow-y-auto flex-1 text-xs text-zinc-400">
-    {% for key, data in templates.items() %}
-    <label class="p-2.5 rounded-xl bg-zinc-800/40 border border-zinc-800/50 hover:border-zinc-700 cursor-pointer block transition group has-[:checked]:bg-mauve-600/50 has-[:checked]:border-mauve-400">
-        
-        <input type="radio" name="selected_template" value="{{ key }}" class="sr-only"
-            hx-get="/templates/select?name={{ key }}"
-            hx-trigger="change"
-            hx-target="#template-editor-container"
-            hx-swap="outerHTML">
-
-        <p class="text-zinc-300 font-medium truncate">{{ data.name }}</p>
-        
-        <p class="text-[10px] text-zinc-500">
-            Preferred days : {{ data.preferred_days | join(', ') }}
-        </p>
-        
-        <p class="text-[10px] text-zinc-500 truncate">
-            {{ data.description | default('Description') }}
-        </p>
-        
-        <p class="text-[10px] text-zinc-500">
-            First aired : {{ data.first_aired }} / Last aired : {{ data.last_aired }}
-        </p>
-    </label>
-    {% endfor %}
-</div>
+{% include "modules/templates_list.html" %}

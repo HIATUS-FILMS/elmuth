@@ -5,7 +5,7 @@ import datetime
 import json
 from bcolors import bcolors
 from flask import render_template, request, jsonify, session, Response, redirect
-from ffplayout import readaddress, readid, ffheaders
+from ffplayout import readaddress, readid, ffheaders, readconfig, getinfo_current_media
 import flask_login
 from media import connect_db
 from markupsafe import escape
@@ -15,7 +15,7 @@ STORAGE_ROOT = "/var/lib/ffplayout/tv-media"
 def get_media_row(filename):
     connect = connect_db()
     row = connect.execute(
-        "SELECT filepath, length FROM media WHERE filename = ?", (filename,)
+        "SELECT filepath, length, duration FROM media WHERE filename = ?", (filename,)
     ).fetchone()
     connect.close()
     return row
@@ -27,7 +27,7 @@ def length_to_seconds(text):
     return seconds
 
 def format_duration(item):
-    total_seconds = int(item.get("duration", 0))
+    total_seconds = int(round(get_item_length(item)))
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
     seconds = total_seconds % 60
@@ -65,6 +65,77 @@ def add_media_info(items):
             item["description"] = row["description"]
     connect.close()
 
+def get_day_start_seconds(): #gets the start of the playlist from the config, ffplayout starts its playlists at day_start
+    try:
+        day_start = readconfig().get("ffplayout", {}).get("day_start", "00:00:00")
+        hours, minutes, seconds = [float(part) for part in day_start.split(":")]
+        return hours * 3600 + minutes * 60 + seconds
+    except Exception as e:
+        print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error reading day_start : {e}" + bcolors.ENDC)
+        return 0
+
+def get_item_length(item): #real airing length of an item, a cut or stretched item is not as long as its file
+    if "out" in item:
+        return float(item["out"]) - float(item.get("in", 0))
+    return float(item.get("duration", 0))
+
+def get_playing_seconds(): #where "now" is on the clock of the playlist, which starts at day_start
+    now = datetime.datetime.now()
+    seconds_now = now.hour * 3600 + now.minute * 60 + now.second
+    if seconds_now < get_day_start_seconds(): #after midnight, but still in the playlist of yesterday
+        seconds_now += 86400
+    return seconds_now
+
+def get_playing_date(): #date of the playlist that is on air
+    now = datetime.datetime.now()
+    seconds_now = now.hour * 3600 + now.minute * 60 + now.second
+    if seconds_now < get_day_start_seconds():
+        return (now.date() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    return now.date().strftime('%Y-%m-%d')
+
+def find_current_index(items, current_media, planned_starts): #finds which item of the playlist is on air
+    index = current_media.get("index")
+    if isinstance(index, int) and 0 <= index < len(items): #ffplayout gives the position
+        return index
+
+    source = current_media.get("media", {}).get("source")
+    same_source = [position for position, item in enumerate(items) if item.get("source") == source and not item.get("pending_delete")]
+    if not same_source:
+        return None
+    #a repeated media (a logo for example) can be anywhere, so the closest to the planned time wins
+    return min(same_source, key=lambda position: abs(planned_starts[position] - get_playing_seconds()))
+
+def add_airing_times(items, date): #estimates the airing time of every item
+    planned_clock = get_day_start_seconds()
+    planned_starts = []
+    for item in items: #planned times, from the start of the playlist
+        planned_starts.append(planned_clock)
+        if not item.get("pending_delete"):
+            planned_clock += get_item_length(item)
+    start_times = list(planned_starts)
+
+    if date == get_playing_date(): #the playlist is on air, so the estimate starts from what is playing now
+        try:
+            current_media = getinfo_current_media()
+            current_index = find_current_index(items, current_media, planned_starts) if current_media else None
+            if current_index is not None and "elapsed" in current_media:
+                elapsed = float(current_media["elapsed"])
+                start_times[current_index] = get_playing_seconds() - elapsed
+                clock = get_playing_seconds() + max(get_item_length(items[current_index]) - elapsed, 0)
+                for position in range(current_index + 1, len(items)): #what comes after follows the real time
+                    start_times[position] = clock
+                    if not items[position].get("pending_delete"):
+                        clock += get_item_length(items[position])
+        except Exception as e:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error reading the current media : {e}" + bcolors.ENDC)
+
+    for position, item in enumerate(items):
+        if item.get("pending_delete"): #the item is about to be deleted, so it takes no time
+            item["start_time"] = "--:--:--"
+            continue
+        total_seconds = int(start_times[position]) % 86400 #after midnight, the clock starts again
+        item["start_time"] = f"{total_seconds // 3600:02d}:{(total_seconds % 3600) // 60:02d}:{total_seconds % 60:02d}"
+
 def get_distinct_values(column):
     connect = connect_db()
     rows = connect.execute(
@@ -80,6 +151,7 @@ def prepare_items(api_items, date):
         item["pending_delete"] = (i in deleted)
         items.append(item)
     items = items + session.get('draft_playlist', [])
+    add_airing_times(items, date)
     add_media_info(items)
     for item in items:
         format_duration(item)
@@ -107,40 +179,35 @@ def playlist_register(app):
             return jsonify({"status": "error", "message": "No data fetched"}), 400
 
         selected_date = fetch.get("date")
-        new_items = fetch.get("items", [])
+        new_order = fetch.get("order", [])
+
+        if not new_order: #never rewrites a playlist without a new order
+            return jsonify({"status": "error", "message": "No order received"}), 400
 
         headers = ffheaders()
         url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
 
         try:
-            
+
             response = requests.get(url, headers=headers)
             if response.status_code != 200:
                 return jsonify({"status": "error", "message": "Could not fetch playlist from ffplayout"}), 500
 
             data = response.json()
             api_items = data.get("program", [])
-            
-            
-            items_dict = {item["source"]: item for item in api_items}
 
-            
-            reordered_program = []
-            for item in new_items:
-                source = item.get("source")
-                if source in items_dict:
-                    reordered_program.append(items_dict[source])
+            reordered_program = [api_items[index] for index in new_order if 0 <= index < len(api_items)] #by position, so a repeated media keeps its own in and out
+            if not reordered_program: #nothing valid in the new order, so the playlist stays untouched
+                return jsonify({"status": "error", "message": "Invalid order"}), 400
 
             data["program"] = reordered_program
 
-            
             session.pop('draft_playlist', None)
             session.modified = True
 
-            
             url_post = f"{readaddress()}/api/playlist/{readid()}"
             save_response = requests.post(url_post, headers=headers, json=data)
-            
+
             if save_response.status_code in [200, 201]:
                 print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [SUCCESS] Playlist reordered for {selected_date}" + bcolors.ENDC)
                 return jsonify({"status": "success", "message": "Order updated"}), 200
@@ -167,7 +234,7 @@ def playlist_register(app):
         if row is None:
             return "", 404
 
-        duration = length_to_seconds(row["length"] or "00:00")
+        duration = row["duration"] or length_to_seconds(row["length"] or "00:00")
         folder = row["filepath"]
         full_path = f"{STORAGE_ROOT}/{folder}/{media_source}" if folder else f"{STORAGE_ROOT}/{media_source}"
 
