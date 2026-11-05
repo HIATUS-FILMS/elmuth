@@ -250,6 +250,40 @@ def webserver():
 
         return f'<div class="bg-emerald-500 h-full transition-all duration-500" style="width: {progress}%;" hx-get="/dashboard/status/progress" hx-trigger="every 0.5s" hx-swap="outerHTML"></div>'
 
+    @app.route('/dashboard/status/playlist_remaining')
+    @flask_login.login_required
+    def playlist_remaining():
+        try:
+            playlist_data = getinfo_current_playlist()
+            current_media = getinfo_current_media()
+            
+            if not playlist_data or "program" not in playlist_data:
+                return jsonify({"remaining": "00:00:00:000"})
+                
+            programs = playlist_data.get("program", [])
+            
+            total_duration_sec = sum(float(item.get("duration", 0)) for item in programs)
+            
+            elapsed_sec = 0
+            if current_media and "elapsed" in current_media:
+                elapsed_sec = float(current_media["elapsed"])
+            
+            remaining_sec = max(0, total_duration_sec - elapsed_sec)
+            
+            total_milliseconds = int(round(remaining_sec * 1000))
+            hours = total_milliseconds // 3600000
+            minutes = (total_milliseconds % 3600000) // 60000
+            seconds = (total_milliseconds % 60000) // 1000
+            milliseconds = total_milliseconds % 1000
+            
+            formatted_remaining = f"{hours:02d}:{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
+            
+            return jsonify({"remaining": formatted_remaining})
+            
+        except Exception as e:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error calculating playlist remaining time : {e}" + bcolors.ENDC)
+            return jsonify({"remaining": "00:00:00:000"})
+
     @app.route('/dashboard/running')
     @flask_login.login_required
     def dashboard_running():
@@ -504,7 +538,7 @@ def webserver():
     @flask_login.login_required
     def templates_create():
         template_data = template_create_new()
-        return render_template('modules/templates_items.html', templates=template_data)
+        return render_template('modules/templates_list.html', templates=template_data)
 
     @app.route('/templates/select', methods=['GET'])
     @flask_login.login_required
@@ -681,6 +715,47 @@ def webserver():
             items = get_distinct_values("type")
 
         return "".join([f'<option value="{item}">{item}</option>' for item in items])
+
+    @app.route('/templates/generate', methods=['POST'])
+    @flask_login.login_required
+    def templates_generate_route():
+        template_key = request.form.get('template_key')
+        target_date = request.form.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
+        
+        templates = templates_soft()
+        template = templates.get(template_key)
+        
+        if not template:
+            return jsonify({"error": "Template not found"}), 404
+            
+        from engine import generate_playlist, load_medias
+        medias = load_medias()
+        
+        result = generate_playlist(template, target_date, medias)
+        
+        playlist_items = result.get("items", [])
+        warnings = result.get("warnings", [])
+        
+        headers = ffheaders()
+        base = f"{readaddress()}/api/playlist/{readid()}"
+        payload = {
+            "channel": readid(),
+            "date": target_date,
+            "program": playlist_items
+        }
+        
+        try:
+            resp = requests.post(base, headers=headers, json=payload)
+            if resp.status_code == 200:
+                print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] Playlist for {target_date} successfully generated and pushed to ffplayout!" + bcolors.ENDC)
+            else:
+                print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Failed to push playlist to ffplayout: {resp.text}" + bcolors.ENDC)
+        except Exception as e:
+            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Playout communication error: {e}" + bcolors.ENDC)
+            
+        resp = Response('', 200)
+        resp.headers['HX-Redirect'] = f"/playout?playlist_date={target_date}"
+        return resp
 
     print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
     app.run(debug=True, port=8080)
