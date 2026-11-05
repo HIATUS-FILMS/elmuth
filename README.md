@@ -64,11 +64,11 @@ elmuth uses the following third party libraries :
 * Software base
 - [x] Config file & database support
 - [x] Media scan
-- [ ] Playlist generator **(Work in progress)**
+- [x] Playlist generator **(Use with caution)**
 
 * WebUI
 - [x] Setup wizard
-- [ ] Playlist editor **(Work in progress)**
+- [x] Playlist editor
 - [x] Playout control
 - [ ] Settings section
 - [x] Media asset management
