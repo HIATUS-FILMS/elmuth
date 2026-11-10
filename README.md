@@ -16,7 +16,7 @@ Elmuth aims to manage a television playout system capable of scheduling a broadc
 ## Informations
 
 > [!CAUTION]
-> elmuth is not ready for production; use it only for testing purposes.
+> elmuth is still under heavy development; use it with the understanding that the product is not yet ready for production.
 
 Originally conceived for a French WebTV project, the project aims to follow a roadmap that will enable it to serve a wider variety of projects while making the technology accessible to as many people as possible.
 
@@ -24,9 +24,9 @@ Originally conceived for a French WebTV project, the project aims to follow a ro
 
 ## What is the current status of elmuth's development?
 
-The project is still in its early stages, and the first pre-alpha versions should be released within a few weeks or months.
+The project is approaching the first alpha releases should be released within a few months. However, you can test it as development progresses by running it on your machine using ffplayout.
 
-Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, CSS and Javascript code.
+Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, Tailwind, HTMX and Javascript code.
 
 ## Is AI accepted in code ?
 
@@ -35,6 +35,7 @@ Currently, the use of AI is not permitted for designing critical parts of the co
 If you need to use it to fix bugs or resolve an issue, we recommend using local AI whenever possible in this context.
 
 ## License
+
 elmuth is distributed under the GNU General Public License GPLv3, see LICENSE file for details.
 
 elmuth uses the following third party libraries :
