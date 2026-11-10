@@ -34,6 +34,15 @@ Currently, the use of AI is not permitted for designing critical parts of the co
 
 If you need to use it to fix bugs or resolve an issue, we recommend using local AI whenever possible in this context.
 
+## Install
+
+To install **elmuth** follow the instructions in the wiki :
+
+> [!CAUTION]
+> The nightly versions of elmuth may cause issues during installation and use. Please test the software in a controlled virtual environment. You are solely responsible for any bugs, crashes, or other issues that arise from using elmuth’s nightly versions on a production machine.
+
+* [Installation steps](https://github.com/HIATUS-FILMS/elmuth/wiki/Install-instructions)
+
 ## License
 
 elmuth is distributed under the GNU General Public License GPLv3, see LICENSE file for details.
