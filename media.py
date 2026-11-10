@@ -1,27 +1,38 @@
 # This is the media asset manager part of elmuth
 
-import sqlite3
-import os
 import datetime
 import json
+import os
+import sqlite3
+
 import requests
+
 from bcolors import bcolors
-from ffplayout import get_access_token, get_new_access_token, ffplayout_token, pass_decrypt, readid, readaddress, ffheaders
-
-
+from ffplayout import (
+    ffheaders,
+    readaddress,
+    readid,
+)
 
 db = "databases/medias.db"
+
 
 def connect_db():
     connect = sqlite3.connect(db)
     connect.row_factory = sqlite3.Row
-    print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The media database was successfully loaded" + bcolors.ENDC)
+    print(
+        bcolors.OKGREEN
+        + datetime.datetime.now().strftime("%H:%M:%S")
+        + " [INFO] The media database was successfully loaded"
+        + bcolors.ENDC
+    )
     return connect
+
 
 def init_db():
     os.makedirs(os.path.dirname(db), exist_ok=True)
     connect = connect_db()
-    connect.execute('''
+    connect.execute("""
         CREATE TABLE IF NOT EXISTS media (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             filename TEXT UNIQUE NOT NULL,
@@ -37,10 +48,11 @@ def init_db():
             lastaired TEXT,
             present INTEGER DEFAULT 1
             )
-    ''')
+    """)
     connect.commit()
     connect.close()
     migrate_db()
+
 
 def migrate_db():
     connect = connect_db()
@@ -49,6 +61,7 @@ def migrate_db():
         connect.execute("ALTER TABLE media ADD COLUMN duration REAL")
     connect.commit()
     connect.close()
+
 
 def write_db(name, path, length, duration):
     try:
@@ -59,28 +72,33 @@ def write_db(name, path, length, duration):
                        filepath = excluded.filepath,
                        length = excluded.length,
                        duration = excluded.duration""",
-                (name, path, length, float(duration)))
+                (name, path, length, float(duration)),
+            )
     except Exception as e:
         print(f"An error occured while writing the media:{e}")
 
+
 def get_data(source_path):
     headers = ffheaders()
-    headers['Content-Type'] = 'application/json'
-    
-    url = readaddress() + '/api/file/' + readid() + '/browse'
-    
-    payload = {
-        "source": source_path,
-        "folders_only": False
-    }
-    
+    headers["Content-Type"] = "application/json"
+
+    url = readaddress() + "/api/file/" + readid() + "/browse"
+
+    payload = {"source": source_path, "folders_only": False}
+
     data = requests.post(url, headers=headers, data=json.dumps(payload))
-    
+
     if data.status_code == 200:
         return data.json()
     else:
-        print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] API error {data.status_code} for the path {source_path}" + bcolors.ENDC)
+        print(
+            bcolors.FAIL
+            + datetime.datetime.now().strftime("%H:%M:%S")
+            + f" [ERROR] API error {data.status_code} for the path {source_path}"
+            + bcolors.ENDC
+        )
         return {}
+
 
 def media_agent(path_current=""):
     call_api = get_data(path_current)
@@ -92,7 +110,12 @@ def media_agent(path_current=""):
         name = file.get("name")
 
         if name.endswith((".mp4", ".mkv", ".avi")):
-            print(bcolors.OKBLUE + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} has been found in {path_current}" + bcolors.ENDC)
+            print(
+                bcolors.OKBLUE
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [INFO] The file {name} has been found in {path_current}"
+                + bcolors.ENDC
+            )
 
             duration_sec = file.get("duration", 0)
 
@@ -100,7 +123,7 @@ def media_agent(path_current=""):
             hours = total_seconds // 3600
             minutes = (total_seconds % 3600) // 60
             seconds = total_seconds % 60
-            
+
             if hours > 0:
                 length_formatted = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
             else:
@@ -109,15 +132,25 @@ def media_agent(path_current=""):
             write_db(name, path_current, length_formatted, duration_sec)
 
         else:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] The file {name} is not compatible (Wrong file extension)" + bcolors.ENDC)
+            print(
+                bcolors.FAIL
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [INFO] The file {name} is not compatible (Wrong file extension)"
+                + bcolors.ENDC
+            )
 
     for folder in folders:
         if path_current:
             path_new = f"{path_current}/{folder}"
-        
+
         else:
             path_new = folder
 
-        print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] Scanning {path_new}" + bcolors.ENDC)
+        print(
+            bcolors.OKGREEN
+            + datetime.datetime.now().strftime("%H:%M:%S")
+            + f" [INFO] Scanning {path_new}"
+            + bcolors.ENDC
+        )
 
         media_agent(path_new)

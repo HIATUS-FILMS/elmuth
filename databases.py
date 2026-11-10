@@ -1,28 +1,34 @@
 # This manages elmuth databases
 
-import sqlite3
-import os
 import datetime
-import json
+import os
+import sqlite3
+
 from bcolors import bcolors
 from config import config_soft
+
 
 def init_db():
 
     config = config_soft()
 
-    os.makedirs('databases', exist_ok=True)
+    os.makedirs("databases", exist_ok=True)
     auth_path = config["db"]["auth_path"]
     authdb = sqlite3.connect(auth_path)
-    print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The database was successfully loaded" + bcolors.ENDC)
+    print(
+        bcolors.OKGREEN
+        + datetime.datetime.now().strftime("%H:%M:%S")
+        + " [INFO] The database was successfully loaded"
+        + bcolors.ENDC
+    )
 
     try:
         with authdb:
             cursor_auth = authdb.cursor()
-            sql = '''CREATE TABLE IF NOT EXISTS el_ffplayout (
+            sql = """CREATE TABLE IF NOT EXISTS el_ffplayout (
                         username TEXT,
                         password TEXT
-            );'''
+            );"""
             cursor_auth.execute(sql)
             authdb.commit()
     except Exception as e:
@@ -31,16 +37,17 @@ def init_db():
     try:
         with authdb:
             cursor_auth = authdb.cursor()
-            sql = '''CREATE TABLE IF NOT EXISTS el_credentials (
+            sql = """CREATE TABLE IF NOT EXISTS el_credentials (
                         id_client INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT,
                         password TEXT
-            );'''
+            );"""
             cursor_auth.execute(sql)
             authdb.commit()
     except Exception as e:
         print(f"An error occured while creating the table:{e}")
     authdb.close()
+
 
 def db_connect():
     config = config_soft()

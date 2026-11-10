@@ -1,20 +1,47 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
-import flask_login
-from flask_login import UserMixin, LoginManager, login_user
-from werkzeug.security import generate_password_hash, check_password_hash
-import os
-from bcolors import bcolors
 import datetime
-import sqlite3
 import json
-from cryptography.fernet import Fernet
+import os
+import sqlite3
+
+import flask_login
 import requests
-from ffplayout import getinfo_current_media, getinfo_current_playlist, sendinfo_prev, sendinfo_play, sendinfo_stop, sendinfo_next, get_access_token, readaddress, readid, ffheaders
-from databases import db_connect
+from cryptography.fernet import Fernet
+from flask import Flask, Response, jsonify, redirect, render_template, request
+from flask_login import LoginManager, UserMixin, login_user
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from bcolors import bcolors
 from config import config_soft
+from databases import db_connect
+from ffplayout import (
+    ffheaders,
+    getinfo_current_media,
+    getinfo_current_playlist,
+    readaddress,
+    readid,
+    sendinfo_next,
+    sendinfo_play,
+    sendinfo_prev,
+    sendinfo_stop,
+)
 from media import init_db, media_agent
-from planifier import playlist_register, prepare_items, get_distinct_values, find_current_index, get_planned_starts, get_item_length
-from templates import templates_soft, template_create_new, template_save_data, template_delete, template_add_block, template_delete_block, get_media_list_by_family
+from planifier import (
+    find_current_index,
+    get_distinct_values,
+    get_item_length,
+    get_planned_starts,
+    playlist_register,
+    prepare_items,
+)
+from templates import (
+    get_media_list_by_family,
+    template_add_block,
+    template_create_new,
+    template_delete,
+    template_delete_block,
+    template_save_data,
+    templates_soft,
+)
 
 app = Flask(__name__)
 
@@ -22,11 +49,13 @@ app.secret_key = os.urandom(24).hex()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login_page'
+login_manager.login_view = "login_page"
+
 
 class User(UserMixin):
     def __init__(self, username):
         self.id = username
+
 
 @login_manager.user_loader
 def load_user(username):
@@ -34,7 +63,9 @@ def load_user(username):
     with db_connect() as authdb:
 
         cursor = authdb.cursor()
-        cursor.execute("SELECT username FROM el_credentials WHERE username = ?", (username,))
+        cursor.execute(
+            "SELECT username FROM el_credentials WHERE username = ?", (username,)
+        )
         result = cursor.fetchone()
 
         if result:
@@ -42,18 +73,23 @@ def load_user(username):
 
         return None
 
+
 def setup_status():
     config = config_soft()
     db_path = config["db"]["auth_path"]
 
-    if not os.path.exists(db_path) or os.path.getsize(db_path) == 0: #file does not exists or 0b in size
-            return False
+    if (
+        not os.path.exists(db_path) or os.path.getsize(db_path) == 0
+    ):  # file does not exists or 0b in size
+        return False
 
     try:
         with db_connect() as authdb:
             cursor = authdb.cursor()
 
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='el_credentials';")
+            cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='el_credentials';"
+            )
             if not cursor.fetchone():
                 return False
 
@@ -81,60 +117,81 @@ def webserver():
 
     playlist_register(app)
 
-    @app.route('/setup', methods=['GET', 'POST'])
+    @app.route("/setup", methods=["GET", "POST"])
     def setup_page():
         if setup_status():
             return redirect("/login", code=302)
 
-        if request.method == 'POST':
-            ffuser = request.form['ffuser']
-            ffkey = Fernet.generate_key().decode('utf-8')
-            cipher_suite = Fernet(ffkey.encode('utf-8'))
-            ffpassword_plain = request.form['ffpassword']
-            ffpassword_hashed = cipher_suite.encrypt(ffpassword_plain.encode('utf-8'))
-            ffaddress = request.form['ffaddress']
-            eluser = request.form['eluser']
-            elpassword_plain = request.form['elpassword']
-            elpassword_hashed = generate_password_hash(elpassword_plain, method="pbkdf2:sha256")
+        if request.method == "POST":
+            ffuser = request.form["ffuser"]
+            ffkey = Fernet.generate_key().decode("utf-8")
+            cipher_suite = Fernet(ffkey.encode("utf-8"))
+            ffpassword_plain = request.form["ffpassword"]
+            ffpassword_hashed = cipher_suite.encrypt(ffpassword_plain.encode("utf-8"))
+            ffaddress = request.form["ffaddress"]
+            eluser = request.form["eluser"]
+            elpassword_plain = request.form["elpassword"]
+            elpassword_hashed = generate_password_hash(
+                elpassword_plain, method="pbkdf2:sha256"
+            )
 
             def write_db():
                 try:
                     with db_connect() as authdb:
                         cursor_auth = authdb.cursor()
-                        cursor_auth.execute("INSERT INTO el_ffplayout (username, password) values (?, ?)", (ffuser, ffpassword_hashed))
-                        cursor_auth.execute("INSERT INTO el_credentials (username, password) values (?, ?)", (eluser, elpassword_hashed))
-                        print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] Database entries successfully written" + bcolors.ENDC)
+                        cursor_auth.execute(
+                            "INSERT INTO el_ffplayout (username, password) values (?, ?)",
+                            (ffuser, ffpassword_hashed),
+                        )
+                        cursor_auth.execute(
+                            "INSERT INTO el_credentials (username, password) values (?, ?)",
+                            (eluser, elpassword_hashed),
+                        )
+                        print(
+                            bcolors.OKGREEN
+                            + datetime.datetime.now().strftime("%H:%M:%S")
+                            + " [INFO] Database entries successfully written"
+                            + bcolors.ENDC
+                        )
                 except Exception as e:
                     print(f"An error occurred while writing to db: {e}")
                 authdb.close()
+
             write_db()
-            with open('settings/config.json', 'r+') as f:
+            with open("settings/config.json", "r+") as f:
                 data = json.load(f)
-                data['ffplayout']['base_url'] = ffaddress
-                data['ffplayout']['private_key'] = ffkey
+                data["ffplayout"]["base_url"] = ffaddress
+                data["ffplayout"]["private_key"] = ffkey
                 f.seek(0)
                 json.dump(data, f, indent=4)
                 f.truncate()
             return redirect("/login", code=302)
-        return render_template('setup.html')
+        return render_template("setup.html")
 
-    @app.route('/login', methods=['GET', 'POST'])
+    @app.route("/login", methods=["GET", "POST"])
     def login_page():
-        if request.method == 'POST':
-            loginuser = request.form['loginuser']
-            loginpassword = request.form['loginpassword']
+        if request.method == "POST":
+            loginuser = request.form["loginuser"]
+            loginpassword = request.form["loginpassword"]
 
             def read_db():
                 try:
                     with db_connect() as authdb:
                         cursor_auth = authdb.cursor()
-                        cursor_auth.execute("SELECT password FROM el_credentials WHERE username = ?", (loginuser,))
+                        cursor_auth.execute(
+                            "SELECT password FROM el_credentials WHERE username = ?",
+                            (loginuser,),
+                        )
                         result = cursor_auth.fetchone()
 
                     if result is None:
                         return False
 
-                    password_hash = result["password"] if isinstance(result, sqlite3.Row) else result[0]
+                    password_hash = (
+                        result["password"]
+                        if isinstance(result, sqlite3.Row)
+                        else result[0]
+                    )
                     return check_password_hash(password_hash, loginpassword)
 
                 except Exception as e:
@@ -146,16 +203,15 @@ def webserver():
                 user_obj = User(loginuser)
                 login_user(user_obj)
                 return redirect("/dashboard", code=302)
-        return render_template('login.html')
+        return render_template("login.html")
 
-    
-    @app.route('/')
-    @app.route('/dashboard', methods=['GET', 'POST'])
+    @app.route("/")
+    @app.route("/dashboard", methods=["GET", "POST"])
     @flask_login.login_required
     def dashboard_page():
-        return render_template('dashboard.html', media=getinfo_current_media())
+        return render_template("dashboard.html", media=getinfo_current_media())
 
-    @app.route('/dashboard/status')
+    @app.route("/dashboard/status")
     @flask_login.login_required
     def dashboard_status():
         media_data = getinfo_current_media()
@@ -167,7 +223,7 @@ def webserver():
                 return jsonify(media_data)
         return jsonify({"error": "Unable to fetch your data"}), 500
 
-    @app.route('/dashboard/status/current_media')
+    @app.route("/dashboard/status/current_media")
     @flask_login.login_required
     def dashboard_status_curmed():
         media_data = getinfo_current_media()
@@ -180,13 +236,11 @@ def webserver():
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
                 title = file_name
 
-        media_name = {
-            "title": title
-        }
+        media_name = {"title": title}
 
         return title
 
-    @app.route('/dashboard/status/current_elapsed')
+    @app.route("/dashboard/status/current_elapsed")
     @flask_login.login_required
     def dashboard_status_curelap():
         media_data = getinfo_current_media()
@@ -197,9 +251,7 @@ def webserver():
             if media_data and "elapsed" in media_data:
                 elapsed = media_data["elapsed"]
 
-        media_elapsed = {
-            "elapsed": elapsed
-        }
+        media_elapsed = {"elapsed": elapsed}
 
         minutes = int(elapsed / 60)
         seconds = int(elapsed % 60)
@@ -207,7 +259,7 @@ def webserver():
 
         return elapsed_post
 
-    @app.route('/dashboard/status/current_duration')
+    @app.route("/dashboard/status/current_duration")
     @flask_login.login_required
     def dashboard_status_curdur():
         media_data = getinfo_current_media()
@@ -218,9 +270,7 @@ def webserver():
             if "media" in media_data and "duration" in media_data["media"]:
                 duration = media_data["media"]["duration"]
 
-        media_duration = {
-            "duration": duration
-        }
+        media_duration = {"duration": duration}
 
         minutes = int(duration / 60)
         seconds = int(duration % 60)
@@ -228,7 +278,7 @@ def webserver():
 
         return duration_post
 
-    @app.route('/dashboard/status/progress')
+    @app.route("/dashboard/status/progress")
     @flask_login.login_required
     def dashboard_status_progress():
         media_data = getinfo_current_media()
@@ -250,151 +300,176 @@ def webserver():
 
         return f'<div class="bg-emerald-500 h-full transition-all duration-500" style="width: {progress}%;" hx-get="/dashboard/status/progress" hx-trigger="every 0.5s" hx-swap="outerHTML"></div>'
 
-    @app.route('/dashboard/status/playlist_remaining')
+    @app.route("/dashboard/status/playlist_remaining")
     @flask_login.login_required
     def playlist_remaining():
         try:
             playlist_data = getinfo_current_playlist()
             current_media = getinfo_current_media()
-            
+
             if not playlist_data or "program" not in playlist_data:
                 return jsonify({"remaining": "00:00:00:000"})
-                
+
             programs = playlist_data.get("program", [])
-            
-            total_duration_sec = sum(float(item.get("duration", 0)) for item in programs)
-            
+
+            total_duration_sec = sum(
+                float(item.get("duration", 0)) for item in programs
+            )
+
             elapsed_sec = 0
             if current_media and "elapsed" in current_media:
                 elapsed_sec = float(current_media["elapsed"])
-            
+
             remaining_sec = max(0, total_duration_sec - elapsed_sec)
-            
+
             total_milliseconds = int(round(remaining_sec * 1000))
             hours = total_milliseconds // 3600000
             minutes = (total_milliseconds % 3600000) // 60000
             seconds = (total_milliseconds % 60000) // 1000
             milliseconds = total_milliseconds % 1000
-            
-            formatted_remaining = f"{hours:02d}:{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
-            
+
+            formatted_remaining = (
+                f"{hours:02d}:{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
+            )
+
             return jsonify({"remaining": formatted_remaining})
-            
+
         except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error calculating playlist remaining time : {e}" + bcolors.ENDC)
+            print(
+                bcolors.FAIL
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [ERROR] Error calculating playlist remaining time : {e}"
+                + bcolors.ENDC
+            )
             return jsonify({"remaining": "00:00:00:000"})
 
-    @app.route('/dashboard/running')
+    @app.route("/dashboard/running")
     @flask_login.login_required
     def dashboard_running():
-        playlist_data = getinfo_current_playlist() #fetch and store raw current playlist data
+        playlist_data = (
+            getinfo_current_playlist()
+        )  # fetch and store raw current playlist data
 
         if playlist_data:
-            items = playlist_data.get("program", []) #extract every media in "program" row
-            current_media = getinfo_current_media() #what ffplayout is playing right now
+            items = playlist_data.get(
+                "program", []
+            )  # extract every media in "program" row
+            current_media = (
+                getinfo_current_media()
+            )  # what ffplayout is playing right now
             current_index = None
-            if current_media: #nothing is current if ffplayout is stopped
-                current_index = find_current_index(items, current_media, get_planned_starts(items)) #position of the media on air, so a repeated media is only current once
+            if current_media:  # nothing is current if ffplayout is stopped
+                current_index = find_current_index(
+                    items, current_media, get_planned_starts(items)
+                )  # position of the media on air, so a repeated media is only current once
 
-            for item_position, item in enumerate(items): #chunk of code looping on each media on the list
-                if "source" in item: #checking if the element contains "source" key
-                    item["is_current"] = (item_position == current_index) #only the item at the position on air is current
+            for item_position, item in enumerate(
+                items
+            ):  # chunk of code looping on each media on the list
+                if "source" in item:  # checking if the element contains "source" key
+                    item["is_current"] = (
+                        item_position == current_index
+                    )  # only the item at the position on air is current
                     file_path = item["source"]
                     file_name = os.path.splitext(os.path.basename(file_path))[0]
                     item["title"] = file_name
 
-                    total_seconds = int(round(get_item_length(item))) #airing length, a stretched or cut item is not as long as its file
+                    total_seconds = int(
+                        round(get_item_length(item))
+                    )  # airing length, a stretched or cut item is not as long as its file
                     hours = total_seconds // 3600
                     minutes = (total_seconds % 3600) // 60
                     seconds = total_seconds % 60
 
                     if hours > 0:
-                        item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        item["formatted_duration"] = (
+                            f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        )
                     else:
                         item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
 
-            return render_template('modules/playlist.html', playlist=items)
+            return render_template("modules/playlist.html", playlist=items)
 
         return jsonify({"error": "Unable to fetch your data"}), 500
 
-    @app.route('/stream/<path:filename>')
+    @app.route("/stream/<path:filename>")
     def proxy_stream(filename):
         target_url = f"http://127.0.0.1:8787/{filename}"
         req = requests.get(target_url, stream=True)
         return Response(
             req.iter_content(chunk_size=1024),
             status=req.status_code,
-            content_type=req.headers.get('content-type')
+            content_type=req.headers.get("content-type"),
         )
 
-    @app.route('/dashboard/prev') #action when previous button clicked
+    @app.route("/dashboard/prev")  # action when previous button clicked
     @flask_login.login_required
     def dashboard_prev():
         control_data = sendinfo_prev()
         return "", 204
 
-    @app.route('/dashboard/play') #action when play button clicked
+    @app.route("/dashboard/play")  # action when play button clicked
     @flask_login.login_required
     def dashboard_play():
         control_data = sendinfo_play()
         return "", 204
 
-    @app.route('/dashboard/stop') #action when stop button clicked
+    @app.route("/dashboard/stop")  # action when stop button clicked
     @flask_login.login_required
     def dashboard_stop():
         control_data = sendinfo_stop()
         return "", 204
 
-    @app.route('/dashboard/next') #action when next button clicked
+    @app.route("/dashboard/next")  # action when next button clicked
     @flask_login.login_required
     def dashboard_next():
         control_data = sendinfo_next()
         return "", 204
 
-    @app.route('/dashboard/text', methods=['GET', 'POST']) #ffplayout message data
+    @app.route("/dashboard/text", methods=["GET", "POST"])  # ffplayout message data
     @flask_login.login_required
     def dashboard_form():
 
         headers = ffheaders()
 
-        if request.method == 'POST':
-            message = request.form.get('message', '')
-            font = request.form.get('font', 'Font 1')
-            font_size = request.form.get('font_size', '24')
-            x_axis = request.form.get('x_axis', 'center')
-            y_axis = request.form.get('y_axis', 'end:72')
-            scroll = request.form.get('scroll', 'Right to left')
-            speed = request.form.get('speed', '100')
-            txt_color = request.form.get('txt_color', '#ffffff')
-            txt_opacity = request.form.get('txt_opacity', '1')
-            bg_color = request.form.get('bg_color', '#000000')
-            bg_opacity = request.form.get('bg_opacity', '0.8')
-            border = request.form.get('border', '4')
-            spacing = request.form.get('spacing', '4')
-            repeat = request.form.get('repeat', '-1')
+        if request.method == "POST":
+            message = request.form.get("message", "")
+            font = request.form.get("font", "Font 1")
+            font_size = request.form.get("font_size", "24")
+            x_axis = request.form.get("x_axis", "center")
+            y_axis = request.form.get("y_axis", "end:72")
+            scroll = request.form.get("scroll", "Right to left")
+            speed = request.form.get("speed", "100")
+            txt_color = request.form.get("txt_color", "#ffffff")
+            txt_opacity = request.form.get("txt_opacity", "1")
+            bg_color = request.form.get("bg_color", "#000000")
+            bg_opacity = request.form.get("bg_opacity", "0.8")
+            border = request.form.get("border", "4")
+            spacing = request.form.get("spacing", "4")
+            repeat = request.form.get("repeat", "-1")
 
-            background = request.form.get('background')
+            background = request.form.get("background")
             bg_enabled = True if background else False
 
             data = {
-                "text": message, 
-                "font_family": font, 
-                "font_size": int(font_size) if font_size.isdigit() else 24, 
-                "position_x": x_axis, 
-                "position_y": y_axis, 
-                "scroll_direction": scroll, 
-                "scroll_speed": int(speed) if speed.isdigit() else 100, 
-                "text_color": txt_color, 
+                "text": message,
+                "font_family": font,
+                "font_size": int(font_size) if font_size.isdigit() else 24,
+                "position_x": x_axis,
+                "position_y": y_axis,
+                "scroll_direction": scroll,
+                "scroll_speed": int(speed) if speed.isdigit() else 100,
+                "text_color": txt_color,
                 "text_opacity": float(txt_opacity) if txt_opacity else 1.0,
-                "background_color": bg_color, 
+                "background_color": bg_color,
                 "background_opacity": float(bg_opacity) if bg_opacity else 0.8,
                 "background_padding": int(border) if border.isdigit() else 4,
                 "line_spacing": int(spacing) if spacing.isdigit() else 4,
-                "scroll_repeat": int(repeat) if repeat.lstrip('-').isdigit() else -1,
-                "background_enabled": bg_enabled
+                "scroll_repeat": int(repeat) if repeat.lstrip("-").isdigit() else -1,
+                "background_enabled": bg_enabled,
             }
 
-            url = readaddress() + '/api/control/' + readid() + '/text'
+            url = readaddress() + "/api/control/" + readid() + "/text"
 
             sendinfo = requests.post(url, headers=headers, json=data)
             print(sendinfo.status_code)
@@ -403,16 +478,18 @@ def webserver():
 
             return "", 204
 
-        return render_template('dashboard.html')
-    
-    @app.route('/playout', methods=['GET', 'POST'])
+        return render_template("dashboard.html")
+
+    @app.route("/playout", methods=["GET", "POST"])
     @flask_login.login_required
     def playout_page():
-        selected_date = request.args.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
-        
+        selected_date = request.args.get(
+            "playlist_date", datetime.date.today().strftime("%Y-%m-%d")
+        )
+
         headers = ffheaders()
         url = f"{readaddress()}/api/playlist/{readid()}?date={selected_date}"
-        
+
         playlist_items = []
         try:
             response = requests.get(url, headers=headers)
@@ -427,11 +504,18 @@ def webserver():
                     minutes = (total_seconds % 3600) // 60
                     seconds = total_seconds % 60
                     if hours > 0:
-                        item["formatted_duration"] = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        item["formatted_duration"] = (
+                            f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                        )
                     else:
                         item["formatted_duration"] = f"{minutes:02d}:{seconds:02d}"
         except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Error retrieving the playlist for {selected_date} : {e}" + bcolors.ENDC)
+            print(
+                bcolors.FAIL
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [ERROR] Error retrieving the playlist for {selected_date} : {e}"
+                + bcolors.ENDC
+            )
 
         playlist_items = prepare_items(playlist_items, selected_date)
         medias_list = []
@@ -445,30 +529,32 @@ def webserver():
             print(f"Error while reading media database : {e}")
 
         return render_template(
-            'playout.html',
+            "playout.html",
             media=getinfo_current_media(),
             medias=medias_list,
             playlist=playlist_items,
             selected_date=selected_date,
-            templates=templates_soft()
+            templates=templates_soft(),
         )
 
-    @app.route('/media/scan', methods=['POST'])
+    @app.route("/media/scan", methods=["POST"])
     @flask_login.login_required
     def scan_media():
         try:
             media_agent()
-            return jsonify({"success": True, "message": "Media database successfully loaded"})
+            return jsonify(
+                {"success": True, "message": "Media database successfully loaded"}
+            )
         except Exception as e:
             return jsonify({"success": "false", "error": str(e)}), 500
 
-    @app.route('/playout/filter')
+    @app.route("/playout/filter")
     @flask_login.login_required
     def playout_filter():
-        name_q = request.args.get('search_name', '').strip()
-        season_q = request.args.get('search_season', '').strip()
-        type_q = request.args.get('search_type', '').strip()
-        family_q = request.args.get('search_family', '').strip()
+        name_q = request.args.get("search_name", "").strip()
+        season_q = request.args.get("search_season", "").strip()
+        type_q = request.args.get("search_type", "").strip()
+        family_q = request.args.get("search_family", "").strip()
 
         query = "SELECT * FROM media WHERE 1=1"
         params = []
@@ -496,16 +582,16 @@ def webserver():
         except Exception as e:
             print(f"Error while filtering media database : {e}")
 
-        return render_template('modules/mam_items.html', medias=medias_list)
+        return render_template("modules/mam_items.html", medias=medias_list)
 
-    @app.route('/playout/playlist_copy', methods=['POST'])
+    @app.route("/playout/playlist_copy", methods=["POST"])
     @flask_login.login_required
     def playout_playlist_copy():
-        source_date = request.form.get('copy_date')
-        target_date = request.form.get('playlist_date')
+        source_date = request.form.get("copy_date")
+        target_date = request.form.get("playlist_date")
 
         if not source_date or not target_date or source_date == target_date:
-            return '', 204
+            return "", 204
 
         headers = ffheaders()
         base = f"{readaddress()}/api/playlist/{readid()}"
@@ -514,19 +600,24 @@ def webserver():
             r = requests.get(f"{base}?date={source_date}", headers=headers)
             program = r.json().get("program", []) if r.status_code == 200 else []
             if not program:
-                return '', 204
+                return "", 204
 
             payload = {"channel": readid(), "date": target_date, "program": program}
             requests.post(base, headers=headers, json=payload)
         except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Copy {source_date} -> {target_date} : {e}" + bcolors.ENDC)
-            return '', 204
+            print(
+                bcolors.FAIL
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [ERROR] Copy {source_date} -> {target_date} : {e}"
+                + bcolors.ENDC
+            )
+            return "", 204
 
-        resp = Response('', 200)
-        resp.headers['HX-Redirect'] = f"/playout?playlist_date={target_date}"
+        resp = Response("", 200)
+        resp.headers["HX-Redirect"] = f"/playout?playlist_date={target_date}"
         return resp
-    
-    @app.route('/templates', methods=['GET', 'POST'])
+
+    @app.route("/templates", methods=["GET", "POST"])
     @flask_login.login_required
     def templates_page():
 
@@ -535,21 +626,26 @@ def webserver():
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
 
-        return render_template('templates.html', templates=template_info, families=families_list, types=types_list)
+        return render_template(
+            "templates.html",
+            templates=template_info,
+            families=families_list,
+            types=types_list,
+        )
 
-    @app.route('/templates/create', methods=['POST'])
+    @app.route("/templates/create", methods=["POST"])
     @flask_login.login_required
     def templates_create():
         template_data = template_create_new()
-        return render_template('modules/templates_list.html', templates=template_data)
+        return render_template("modules/templates_list.html", templates=template_data)
 
-    @app.route('/templates/select', methods=['GET'])
+    @app.route("/templates/select", methods=["GET"])
     @flask_login.login_required
     def templates_select():
-        template_key = request.args.get('name')
+        template_key = request.args.get("name")
         template_info = templates_soft()
         data = template_info.get(template_key, {})
-        
+
         last_end = "00:00:00"
         is_full = False
         if data and data.get("blocks"):
@@ -569,51 +665,53 @@ def webserver():
 
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
-        
+
         intros_list = get_media_list_by_family("Intro")
         outros_list = get_media_list_by_family("Outro")
 
-        editor_module = render_template('modules/templates_editor.html', data=data, current_key=template_key)
+        editor_module = render_template(
+            "modules/templates_editor.html", data=data, current_key=template_key
+        )
 
         inspector_module = render_template(
-            'modules/templates_inspector.html', 
-            data=data, 
-            current_key=template_key, 
-            last_end=last_end, 
-            next_time=next_time, 
-            is_full=is_full, 
-            families=families_list, 
+            "modules/templates_inspector.html",
+            data=data,
+            current_key=template_key,
+            last_end=last_end,
+            next_time=next_time,
+            is_full=is_full,
+            families=families_list,
             types=types_list,
             intros=intros_list,
             outros=outros_list,
-            oob=True
+            oob=True,
         )
 
         return editor_module + inspector_module
 
-    @app.route('/templates/save', methods=['POST'])
+    @app.route("/templates/save", methods=["POST"])
     @flask_login.login_required
     def templates_save():
-        template_key = request.form.get('template_key')
+        template_key = request.form.get("template_key")
         template_save_data(request.form, template_key)
-        return redirect('/templates')
+        return redirect("/templates")
 
-    @app.route('/templates/delete', methods=['POST'])
+    @app.route("/templates/delete", methods=["POST"])
     @flask_login.login_required
     def templates_delete_route():
-        template_key = request.form.get('template_key')
+        template_key = request.form.get("template_key")
         template_delete(template_key)
-        return redirect('/templates')
+        return redirect("/templates")
 
-    @app.route('/templates/block_add', methods=['POST'])
+    @app.route("/templates/block_add", methods=["POST"])
     @flask_login.login_required
     def templates_block_add_route():
-        template_key = request.form.get('template_key')
+        template_key = request.form.get("template_key")
         template_add_block(template_key, request.form)
-        
+
         template_info = templates_soft()
         data = template_info.get(template_key, {})
-        
+
         last_end = "00:00:00"
         is_full = False
         if data and data.get("blocks"):
@@ -630,39 +728,41 @@ def webserver():
                 next_time = new_t.strftime("%H:%M:%S")
         except:
             next_time = "01:00:00"
-            
+
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
 
         intros_list = get_media_list_by_family("Intro")
         outros_list = get_media_list_by_family("Outro")
 
-        editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
-        
+        editor_html = render_template(
+            "modules/templates_editor.html", data=data, current_key=template_key
+        )
+
         inspector_module = render_template(
-            'modules/templates_inspector.html', 
-            data=data, 
-            current_key=template_key, 
-            last_end=last_end, 
-            next_time=next_time, 
-            is_full=is_full, 
-            families=families_list, 
+            "modules/templates_inspector.html",
+            data=data,
+            current_key=template_key,
+            last_end=last_end,
+            next_time=next_time,
+            is_full=is_full,
+            families=families_list,
             types=types_list,
             intros=intros_list,
             outros=outros_list,
-            oob=True
+            oob=True,
         )
-        
+
         return editor_html + inspector_module
 
-    @app.route('/templates/block_delete', methods=['POST'])
+    @app.route("/templates/block_delete", methods=["POST"])
     @flask_login.login_required
     def templates_block_delete_route():
-        template_key = request.args.get('name')
-        block_index = int(request.args.get('index', 0))
-        
+        template_key = request.args.get("name")
+        block_index = int(request.args.get("index", 0))
+
         template_delete_block(template_key, block_index)
-        
+
         template_info = templates_soft()
         data = template_info.get(template_key, {})
 
@@ -682,86 +782,107 @@ def webserver():
                 next_time = new_t.strftime("%H:%M:%S")
         except:
             next_time = "01:00:00"
-            
+
         families_list = get_distinct_values("fam")
         types_list = get_distinct_values("type")
 
         intros_list = get_media_list_by_family("Intro")
         outros_list = get_media_list_by_family("Outro")
 
+        editor_html = render_template(
+            "modules/templates_editor.html", data=data, current_key=template_key
+        )
 
-        editor_html = render_template('modules/templates_editor.html', data=data, current_key=template_key)
-        
         inspector_module = render_template(
-            'modules/templates_inspector.html', 
-            data=data, 
-            current_key=template_key, 
-            last_end=last_end, 
-            next_time=next_time, 
-            is_full=is_full, 
-            families=families_list, 
+            "modules/templates_inspector.html",
+            data=data,
+            current_key=template_key,
+            last_end=last_end,
+            next_time=next_time,
+            is_full=is_full,
+            families=families_list,
             types=types_list,
             intros=intros_list,
             outros=outros_list,
-            oob=True
+            oob=True,
         )
 
         return editor_html + inspector_module
 
-    @app.route('/templates/options')
+    @app.route("/templates/options")
     @flask_login.login_required
     def template_options():
-        opt_type = request.args.get('type')
-        if opt_type == 'family':
+        opt_type = request.args.get("type")
+        if opt_type == "family":
             items = get_distinct_values("fam")
         else:
             items = get_distinct_values("type")
 
         return "".join([f'<option value="{item}">{item}</option>' for item in items])
 
-    @app.route('/templates/generate', methods=['POST'])
+    @app.route("/templates/generate", methods=["POST"])
     @flask_login.login_required
     def templates_generate_route():
-        template_key = request.form.get('template_key')
-        target_date = request.form.get('playlist_date', datetime.date.today().strftime('%Y-%m-%d'))
-        
+        template_key = request.form.get("template_key")
+        target_date = request.form.get(
+            "playlist_date", datetime.date.today().strftime("%Y-%m-%d")
+        )
+
         templates = templates_soft()
         template = templates.get(template_key)
-        
+
         if not template:
             return jsonify({"error": "Template not found"}), 404
-            
+
         from engine import generate_playlist, load_medias
+
         medias = load_medias()
-        
+
         result = generate_playlist(template, target_date, medias)
-        
+
         playlist_items = result.get("items", [])
         warnings = result.get("warnings", [])
-        
+
         headers = ffheaders()
         base = f"{readaddress()}/api/playlist/{readid()}"
-        payload = {
-            "channel": readid(),
-            "date": target_date,
-            "program": playlist_items
-        }
-        
+        payload = {"channel": readid(), "date": target_date, "program": playlist_items}
+
         try:
             resp = requests.post(base, headers=headers, json=payload)
             if resp.status_code == 200:
-                print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + f" [INFO] Playlist for {target_date} successfully generated and pushed to ffplayout!" + bcolors.ENDC)
+                print(
+                    bcolors.OKGREEN
+                    + datetime.datetime.now().strftime("%H:%M:%S")
+                    + f" [INFO] Playlist for {target_date} successfully generated and pushed to ffplayout!"
+                    + bcolors.ENDC
+                )
             else:
-                print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Failed to push playlist to ffplayout: {resp.text}" + bcolors.ENDC)
+                print(
+                    bcolors.FAIL
+                    + datetime.datetime.now().strftime("%H:%M:%S")
+                    + f" [ERROR] Failed to push playlist to ffplayout: {resp.text}"
+                    + bcolors.ENDC
+                )
         except Exception as e:
-            print(bcolors.FAIL + datetime.datetime.now().strftime("%H:%M:%S") + f" [ERROR] Playout communication error: {e}" + bcolors.ENDC)
-            
-        resp = Response('', 200)
-        resp.headers['HX-Redirect'] = f"/playout?playlist_date={target_date}"
+            print(
+                bcolors.FAIL
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [ERROR] Playout communication error: {e}"
+                + bcolors.ENDC
+            )
+
+        resp = Response("", 200)
+        resp.headers["HX-Redirect"] = f"/playout?playlist_date={target_date}"
         return resp
 
-    print(bcolors.OKGREEN + datetime.datetime.now().strftime("%H:%M:%S") + " [INFO] The webserver was successfully loaded" + bcolors.ENDC)
+    print(
+        bcolors.OKGREEN
+        + datetime.datetime.now().strftime("%H:%M:%S")
+        + " [INFO] The webserver was successfully loaded"
+        + bcolors.ENDC
+    )
     app.run(debug=True, port=8080)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     webserver()
