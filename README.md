@@ -71,18 +71,18 @@ elmuth uses the following third party libraries :
 
 ## Roadmap (For v1.0)
 
-* Software base
+### Software base
 - [x] Config file & database support
 - [x] Media scan
 - [x] Playlist generator **(Use with caution)**
 
-* WebUI
+### WebUI
 - [x] Setup wizard
 - [x] Playlist editor
 - [x] Playout control
 - [ ] Settings section
 - [x] Media asset management
 
-* ffplayout
+### ffplayout
 - [x] ffplayout connexion
 - [x] ffplayout control
