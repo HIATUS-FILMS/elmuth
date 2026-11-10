@@ -24,7 +24,7 @@ Originally conceived for a French WebTV project, the project aims to follow a ro
 
 ## What is the current status of elmuth's development?
 
-The project is approaching the first alpha releases should be released within a few months. However, you can test it as development progresses by running it on your machine using ffplayout.
+The project is approaching the first alpha releases. It should be released within a few months. However, you can test it as development progresses by running it on your machine using ffplayout.
 
 Any help will be welcome once the project is a little further along. Since I’m not a professional developer, the first versions will be based on amateur Python 3.14, HTML, Tailwind, HTMX and Javascript code.
 
