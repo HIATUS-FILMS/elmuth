@@ -1,55 +1,73 @@
-<div id="templates-inspector-container" class="flex flex-col gap-4" {% if oob %}hx-swap-oob="true"{% endif %}>
-
+<div id="templates-inspector-container"
+     class="flex flex-col gap-4"
+     {% if oob %}hx-swap-oob="true"{% endif %}>
     <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
-        <form class="flex flex-col gap-3" method="POST" action="/templates/save">
-
+        <form class="flex flex-col gap-3" method="post" action="/templates/save">
             <input type="hidden" name="template_key" value="{{ current_key or '' }}">
-
             <div>
                 <label for="tpl-name" class="block mb-1 text-sm font-medium text-heading">Template name</label>
-                <input id="tpl-name" name="name" type="text" value="{{ data.name if data else '' }}" placeholder="new_template"
+                <input id="tpl-name"
+                       name="name"
+                       type="text"
+                       value="{{ data.name if data else '' }}"
+                       placeholder="new_template"
                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
             </div>
-
             <div>
                 <p class="block mb-1 text-sm font-medium text-heading">Preferred days</p>
                 <div class="flex flex-wrap gap-1">
                     {% set active_days = data.preferred_days if data and data.preferred_days else [] %}
                     {% for d in ['Mo','Tu','We','Th','Fr','Sa','Su'] %}
-                    <label class="cursor-pointer">
-                        <input type="checkbox" name="days" value="{{ d }}" class="sr-only peer" {% if d in active_days %}checked{% endif %}>
-                        <span class="block px-1.5 py-0.5 rounded-full border border-zinc-500 bg-zinc-800 text-xs font-semibold text-zinc-200 transition peer-checked:bg-mauve-600/70 peer-checked:border-mauve-400 peer-checked:text-white">{{ d }}</span>
-                    </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox"
+                                   name="days"
+                                   value="{{ d }}"
+                                   class="sr-only peer"
+                                   {% if d in active_days %}checked{% endif %}>
+                            <span class="block px-1.5 py-0.5 rounded-full border border-zinc-500 bg-zinc-800 text-xs font-semibold text-zinc-200 transition peer-checked:bg-mauve-600/70 peer-checked:border-mauve-400 peer-checked:text-white">{{ d }}</span>
+                        </label>
                     {% endfor %}
                 </div>
             </div>
-
             <div class="flex flex-col gap-1">
                 <label class="block mb-1 text-sm font-medium text-heading">Description</label>
-                <textarea name="description" id="description" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16">{{ data.description if data else '' }}</textarea>
+                <textarea name="description"
+                          id="description"
+                          class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16">{{ data.description if data else '' }}</textarea>
             </div>
-
             <div>
                 <label for="tpl-first" class="block mb-1 text-xs font-medium text-heading">First aired</label>
-                <input id="tpl-first" name="first" type="date" value="{{ data.first_aired if data and data.first_aired != 'N/A' else '' }}"
+                <input id="tpl-first"
+                       name="first"
+                       type="date"
+                       value="{{ data.first_aired if data and data.first_aired != 'N/A' else '' }}"
                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
             </div>
-
             <div>
                 <label for="tpl-last" class="block mb-1 text-xs font-medium text-heading">Last aired</label>
-                <input id="tpl-last" name="last" type="date" value="{{ data.last_aired if data and data.last_aired != 'N/A' else '' }}"
+                <input id="tpl-last"
+                       name="last"
+                       type="date"
+                       value="{{ data.last_aired if data and data.last_aired != 'N/A' else '' }}"
                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
             </div>
-            
             <div class="gap-2 p-0 flex mb-1.5">
                 <div class="w-1/2">
-                    <button type="submit" class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
+                    <button type="submit"
+                            class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
                         Save
                     </button>
                 </div>
                 <div class="w-1/2">
-                    <button type="submit" formaction="/templates/delete" class="flex bg-red-950/60 border border-red-900/50 hover:bg-red-900 text-red-400 border font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
-                        <svg class="mr-2 w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <button type="submit"
+                            formaction="/templates/delete"
+                            class="flex bg-red-950/60 border border-red-900/50 hover:bg-red-900 text-red-400 border font-medium py-2 px-4 rounded-lg w-full items-center justify-center">
+                        <svg class="mr-2 w-4 h-4"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor"
+                             stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         <span>Delete</span>
@@ -58,143 +76,191 @@
             </div>
         </form>
     </div>
-
     <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Import program block</p>
-
     <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
-        <form class="flex flex-col gap-3" hx-post="/templates/block_add" hx-target="#template-editor-container" hx-swap="outerHTML">
-            
+        <form class="flex flex-col gap-3"
+              hx-post="/templates/block_add"
+              hx-target="#template-editor-container"
+              hx-swap="outerHTML">
             <input type="hidden" name="template_key" value="{{ current_key or '' }}">
-
             <div class="flex flex-col gap-1.5">
                 <label class="block text-sm font-medium text-heading">Selected program</label>
                 <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
                     <label class="flex items-center justify-center py-1.5 text-xs font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="criteria_type" value="family" checked class="sr-only"
-                            hx-get="/templates/options?type=family" hx-target="#criteria-value" hx-swap="innerHTML">
+                        <input type="radio"
+                               name="criteria_type"
+                               value="family"
+                               checked
+                               class="sr-only"
+                               hx-get="/templates/options?type=family"
+                               hx-target="#criteria-value"
+                               hx-swap="innerHTML">
                         Family
                     </label>
                     <label class="flex items-center justify-center py-1.5 text-xs font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="criteria_type" value="type" class="sr-only"
-                            hx-get="/templates/options?type=type" hx-target="#criteria-value" hx-swap="innerHTML">
+                        <input type="radio"
+                               name="criteria_type"
+                               value="type"
+                               class="sr-only"
+                               hx-get="/templates/options?type=type"
+                               hx-target="#criteria-value"
+                               hx-swap="innerHTML">
                         Type
                     </label>
                 </div>
             </div>
-
             <div class="flex flex-col gap-1">
-                <select id="criteria-value" name="criteria_value"
-                    class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                <select id="criteria-value"
+                        name="criteria_value"
+                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
                     {% for f in families %}
-                    <option value="{{ f }}">{{ f }}</option>
+                        <option value="{{ f }}">{{ f }}</option>
                     {% endfor %}
                 </select>
             </div>
-
             <div class="flex flex-col gap-1">
                 <label class="block mb-1 text-sm font-medium text-heading">Description</label>
-                <textarea name="block-description" id="block-description" class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16"></textarea>
+                <textarea name="block-description"
+                          id="block-description"
+                          class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner resize-none h-16"></textarea>
             </div>
-
             <div class="flex gap-2">
                 <div class="w-1/2">
                     <label for="blk-start" class="block mb-1 text-xs font-semibold text-heading">Time start</label>
-                    <input type="time" name="start" step="1" value="{{ last_end }}" 
-                    class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                    <input type="time"
+                           name="start"
+                           step="1"
+                           value="{{ last_end }}"
+                           class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
                 </div>
                 <div class="w-1/2">
                     <label for="blk-end" class="block mb-1 text-xs font-semibold text-heading">Time end</label>
-                    <input id="blk-end" name="end" type="time" step="1" value="{{ next_time }}"
+                    <input id="blk-end"
+                           name="end"
+                           type="time"
+                           step="1"
+                           value="{{ next_time }}"
                            class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
                 </div>
             </div>
-
             <div class="flex flex-col gap-1.5">
                 <label class="block text-xs font-semibold text-heading relative">Playback mode / sorting</label>
                 <div class="grid grid-cols-3 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="playback_mode" value="shuffle" class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="playback_mode"
+                               value="shuffle"
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Shuffle
                     </label>
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="playback_mode" value="recent" checked class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="playback_mode"
+                               value="recent"
+                               checked
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Recent
                     </label>
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="playback_mode" value="strict" class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="playback_mode"
+                               value="strict"
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Strict
                     </label>
                 </div>
             </div>
-
             <div class="grid grid-cols-2 gap-2">
                 <div class="flex flex-col gap-1">
                     <label for="intro-media" class="block text-xs font-semibold text-heading">Intro media</label>
-                    <select id="intro-media" name="intro_media"
-                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                    <select id="intro-media"
+                            name="intro_media"
+                            class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
                         <option value="">None (No intro)</option>
                         {% for intro in intros %}
-                        <option value="{{ intro }}">{{ intro }}</option>
+                            <option value="{{ intro }}">{{ intro }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="flex flex-col gap-1">
                     <label for="outro-media" class="block text-xs font-semibold text-heading">Outro media</label>
-                    <select id="outro-media" name="outro_media"
-                        class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
+                    <select id="outro-media"
+                            name="outro_media"
+                            class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner">
                         <option value="">None (No outro)</option>
                         {% for outro in outros %}
-                        <option value="{{ outro }}">{{ outro }}</option>
+                            <option value="{{ outro }}">{{ outro }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
-
             <div class="flex flex-col gap-1.5">
                 <label class="block text-xs font-semibold text-heading relative">Repeat media policy</label>
                 <div class="grid grid-cols-2 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="recent_policy" value="exclude_recent" checked class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="recent_policy"
+                               value="exclude_recent"
+                               checked
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Exclude recently played
                     </label>
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="recent_policy" value="accept_repeat" class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="recent_policy"
+                               value="accept_repeat"
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Accept repeat
                     </label>
                 </div>
             </div>
-
             <div class="flex flex-col gap-1.5">
                 <label class="block text-xs font-semibold text-heading relative">Transition mode</label>
                 <div class="grid grid-cols-2 gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="transition_mode" value="hard" class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="transition_mode"
+                               value="hard"
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Hard cut
                     </label>
                     <label class="relative flex items-center justify-center py-1.5 text-[11px] font-medium rounded-lg cursor-pointer transition text-zinc-400 hover:text-zinc-200 has-[:checked]:bg-zinc-800 has-[:checked]:text-white shadow-sm">
-                        <input type="radio" name="transition_mode" value="smooth" checked class="sr-only" onfocus="this.blur()">
+                        <input type="radio"
+                               name="transition_mode"
+                               value="smooth"
+                               checked
+                               class="sr-only"
+                               onfocus="this.blur()">
                         Smooth cut
                     </label>
                 </div>
             </div>
-
             <div>
                 <p class="mb-1 text-xs font-semibold text-heading">Block color</p>
                 <div class="flex gap-1.5">
                     {% for c in ['bg-violet-800','bg-cyan-700','bg-green-600','bg-amber-400','bg-orange-400','bg-rose-500'] %}
-                    <label class="cursor-pointer relative">
-                        <input type="radio" name="color" value="{{ c }}" class="sr-only peer" {% if loop.last %}checked{% endif %}>
-                        <span class="block w-3 h-3 rounded-sm {{ c }} ring-offset-2 ring-offset-zinc-700 peer-checked:ring-2 peer-checked:ring-white"></span>
-                    </label>
+                        <label class="cursor-pointer relative">
+                            <input type="radio"
+                                   name="color"
+                                   value="{{ c }}"
+                                   class="sr-only peer"
+                                   {% if loop.last %}checked{% endif %}>
+                            <span class="block w-3 h-3 rounded-sm {{ c }} ring-offset-2 ring-offset-zinc-700 peer-checked:ring-2 peer-checked:ring-white"></span>
+                        </label>
                     {% endfor %}
                 </div>
             </div>
-
-            <button type="submit" {% if is_full %}disabled{% endif %} 
+            <button type="submit"
+                    {% if is_full %}disabled{% endif %}
                     class="flex bg-transparent border border-zinc-800/80 {% if is_full %}opacity-50 cursor-not-allowed bg-zinc-950/50 text-zinc-500 border-zinc-900{% else %}hover:bg-zinc-700 text-white cursor-pointer{% endif %} font-medium py-2 px-4 rounded-lg w-full items-center justify-center transition">
                 {% if is_full %}Template full (24h filled){% else %}Add{% endif %}
             </button>
         </form>
     </div>
-
 </div>

@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> <!--Tailwind CSS call-->
-    <title>elmuth Alpha v0.1</title>
-    <link rel="icon" type="image/png" href="static/img/favicon.png" />
-    <meta name="description" content="elmuth is a television production software program that enables the management of live broadcasts">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" 
-        integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
-        crossorigin="anonymous"></script>
-    <style>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <!--Tailwind CSS call-->
+        <title>elmuth Alpha v0.1</title>
+        <link rel="icon" type="image/png" href="static/img/favicon.png" />
+        <meta name="description"
+              content="elmuth is a television production software program that enables the management of live broadcasts">
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js"
+                integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"
+                crossorigin="anonymous"></script>
+        <style>
     @font-face {
         font-family: 'Bitcount Single';
         src: url("{{ url_for('static', filename='fonts/Bitcount_Single/BitcountSingle.ttf') }}") format('truetype');
     }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-</head>
-
-<body class="bg-zinc-950 text-zinc-100 h-screen overflow-hidden">
-
-    {% block content %}{% endblock %} <!--jinja call for content-->
-
-</body>
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    </head>
+    <body class="bg-zinc-950 text-zinc-100 h-screen overflow-hidden">
+        {% block content %}{% endblock %} <!--jinja call for content-->
+    </body>
 </html>

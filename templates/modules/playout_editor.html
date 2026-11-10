@@ -13,47 +13,60 @@
     </thead>
     <tbody>
         {% for item in playlist %}
-        <tr class="hover:bg-zinc-800/30 transition-colors cursor-pointer has-[:checked]:bg-mauve-600/50 {% if item.pending_delete %}hidden{% endif %}" data-source="{{ item.source }}" data-index="{{ loop.index0 }}" data-title="{{ item.title | default(item.source.split('/')[-1]) }}">
-            <td class="py-2 relative">
-                <input type="radio" name="selected" id="pl-{{ loop.index0 }}" value="playlist:{{ loop.index0 }}" class="sr-only"
-                    hx-get="/playout/inspect?name={{ (item.title | default(item.source.split('/')[-1])) | urlencode }}"
-                    hx-trigger="change"
-                    hx-target="#inspector-content"
-                    hx-swap="outerHTML">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ selected_date }}</label>
-            </td>
-            <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.start_time | default('--:--:--') }}</label>
-            </td>
-            <td class="py-2 max-w-[200px] truncate px-2" title="{{ item.title | default(item.source.split('/')[-1]) }}">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer truncate">{{ item.title | default(item.source.split('/')[-1]) }}</label>
-            </td>
-            <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.formatted_duration | default('00:00') }}</label>
-            </td>
-            <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.type or 'N/A' }}</label>
-            </td>
-            <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.fam or 'N/A' }}</label>
-            </td>
-            <td class="py-2 max-w-[150px] truncate px-2" title="{{ item.description | default('...') }}">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer truncate">{{ item.description or '...' }}</label>
-            </td>
-            <td class="py-2">
-                <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">
-                    {% if item.missing or item.error %}
-                    <span class="text-red-500 font-medium">File missing</span>
-                    {% else %}
-                    <span class="text-zinc-600">-</span>
-                    {% endif %}
-                </label>
-            </td>
-        </tr>
+            <tr class="hover:bg-zinc-800/30 transition-colors cursor-pointer has-[:checked]:bg-mauve-600/50 {% if item.pending_delete %}hidden{% endif %}"
+                data-source="{{ item.source }}"
+                data-index="{{ loop.index0 }}"
+                data-title="{{ item.title | default(item.source.split('/')[-1]) }}">
+                <td class="py-2 relative">
+                    <input type="radio"
+                           name="selected"
+                           id="pl-{{ loop.index0 }}"
+                           value="playlist:{{ loop.index0 }}"
+                           class="sr-only"
+                           hx-get="/playout/inspect?name={{ (item.title | default(item.source.split('/')[-1])) | urlencode }}"
+                           hx-trigger="change"
+                           hx-target="#inspector-content"
+                           hx-swap="outerHTML">
+                    <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ selected_date }}</label>
+                </td>
+                <td class="py-2">
+                    <label for="pl-{{ loop.index0 }}"
+                           class="block cursor-pointer">{{ item.start_time | default("--:--:--") }}</label>
+                </td>
+                <td class="py-2 max-w-[200px] truncate px-2"
+                    title="{{ item.title | default(item.source.split('/')[-1]) }}">
+                    <label for="pl-{{ loop.index0 }}"
+                           class="block cursor-pointer truncate">{{ item.title | default(item.source.split('/')[-1]) }}</label>
+                </td>
+                <td class="py-2">
+                    <label for="pl-{{ loop.index0 }}"
+                           class="block cursor-pointer">{{ item.formatted_duration | default("00:00") }}</label>
+                </td>
+                <td class="py-2">
+                    <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.type or 'N/A' }}</label>
+                </td>
+                <td class="py-2">
+                    <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">{{ item.fam or 'N/A' }}</label>
+                </td>
+                <td class="py-2 max-w-[150px] truncate px-2"
+                    title="{{ item.description | default("...") }}">
+                    <label for="pl-{{ loop.index0 }}"
+                           class="block cursor-pointer truncate">{{ item.description or '...' }}</label>
+                </td>
+                <td class="py-2">
+                    <label for="pl-{{ loop.index0 }}" class="block cursor-pointer">
+                        {% if item.missing or item.error %}
+                            <span class="text-red-500 font-medium">File missing</span>
+                        {% else %}
+                            <span class="text-zinc-600">-</span>
+                        {% endif %}
+                    </label>
+                </td>
+            </tr>
         {% else %}
-        <tr>
-            <td colspan="8" class="py-4 text-center text-zinc-600">No playlist for this date.</td>
-        </tr>
+            <tr>
+                <td colspan="8" class="py-4 text-center text-zinc-600">No playlist for this date.</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

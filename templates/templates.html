@@ -1,48 +1,40 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-<div class="bg-transparent text-zinc-100 min-h-screen flex flex-col font-sans">
-    
-    {% include 'modules/navbar.html' %}
-
-    <div class="gap-1 p-1 flex mb-1">
-        <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Time</p>
-            <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
-                <p id="time" style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
+    <div class="bg-transparent text-zinc-100 min-h-screen flex flex-col font-sans">
+        {% include "modules/navbar.html" %}
+        <div class="gap-1 p-1 flex mb-1">
+            <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Time</p>
+                <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                    <p id="time"
+                       style="font-family: 'Bitcount Single', sans-serif"
+                       class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
+                </div>
+            </div>
+            <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Remaining time (Playlist)</p>
+                <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                    <p id="playlist-remaining"
+                       style="font-family: 'Bitcount Single', sans-serif"
+                       class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
+                </div>
             </div>
         </div>
-        <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
-            <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Remaining time (Playlist)</p>
-            <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
-                <p id="playlist-remaining" style="font-family: 'Bitcount Single', sans-serif;" class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
-            </div>
-        </div>
+        <main class="grid grid-cols-12 gap-4 p-1 flex-1">
+            <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+                {% include "modules/templates_items.html" %}
+            </section>
+            <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
+                {% include "modules/templates_editor.html" %}
+            </section>
+            <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px]">
+                <div>
+                    <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3"
+                       id="diffusion-header">Inspector</p>
+                </div>
+                <div class="overflow-y-auto">{% include "modules/templates_inspector.html" %}</div>
+            </section>
+        </main>
     </div>
-
-    <main class="grid grid-cols-12 gap-4 p-1 flex-1">
-        
-        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
-            {% include "modules/templates_items.html" %}
-        </section>
-
-        <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-[670px]">
-            {% include "modules/templates_editor.html" %}
-        </section>
-
-        <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-[670px]">
-            <div>
-                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3" id="diffusion-header">Inspector</p>
-            </div>
-            <div class="overflow-y-auto">
-
-                {% include "modules/templates_inspector.html" %}
-            </div>
-        </section>
-
-    </main>
-
-</div>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}
