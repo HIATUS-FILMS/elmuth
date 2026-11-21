@@ -74,13 +74,13 @@ elmuth uses the following third party libraries :
 ### Software base
 - [x] Config file & database support
 - [x] Media scan
-- [x] Playlist generator **(Use with caution)**
+- [x] Playlist generator **(⚠️ Use with caution)**
 
 ### WebUI
 - [x] Setup wizard
 - [x] Playlist editor
 - [x] Playout control
-- [x] Settings section **(Use with caution)**
+- [x] Settings section **(⚠️ Use with caution)**
 - [ ] Graphics section (Upstream ffplayout 2.8.0)
 - [x] Media asset management
 
