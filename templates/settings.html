@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="bg-transparent text-zinc-100 h-full flex flex-col font-sans">
+        {% include "modules/navbar.html" %}
+        <div class="gap-1 p-1 flex mb-1">
+            <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Time</p>
+                <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                    <p id="time"
+                       style="font-family: 'Bitcount Single', sans-serif"
+                       class="text-center text-red-500 text-[26px] drop-shadow-xl drop-shadow-red-500/50">00:00:00:00</p>
+                </div>
+            </div>
+            <div class="w-1/2 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl px-3 py-4 flex flex-col justify-center">
+                <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Remaining time (Playlist)</p>
+                <div class="bg-black rounded-2xl flex-1 w-full justify-center px-1 py-1">
+                    <p id="playlist-remaining"
+                       style="font-family: 'Bitcount Single', sans-serif"
+                       class="text-center text-green-500 text-[26px] drop-shadow-xl drop-shadow-green-500/50">00:00:00:00</p>
+                </div>
+            </div>
+        </div>
+        <main class="grid grid-cols-12 gap-4 p-1 flex-1 min-h-0">
+            <section class="col-span-3 bg-zinc-900/15 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-full min-h-0 cursor-not-allowed">
+            </section>
+
+            <section class="group/pl col-span-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col h-full min-h-0 overflow-y-auto">
+                <form id="settings-form" action="/settings/save" method="POST" class="flex flex-col gap-4 pb-6">
+
+                    <div class="flex items-center justify-between px-1 mb-2">
+                        <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wider" id="settings-header">Elmuth & ffplayout settings</p>
+                    </div>
+                    
+                    {% for message in messages or [] %}
+                    <p class="text-xs px-1 {% if message.type == 'error' %}text-red-400{% elif message.type == 'warning' %}text-amber-300{% else %}text-emerald-300{% endif %}">{{ message.text }}</p>
+                    {% endfor %}
+
+                    <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                        <p class="text-sm font-medium text-heading mb-1">Elmuth</p>
+                        <div class="flex flex-col gap-1">
+                            <label for="server-port" class="block text-sm font-medium text-heading">Elmuth port (Restart if changed)</label>
+                            <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                <button type="button" 
+                                        onclick="this.nextElementSibling.stepDown()"
+                                        class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                    −
+                                </button>
+
+                                <input id="server-port"
+                                   name="server_port"
+                                   value="{{ settings.server_port if settings else '' }}"
+                                    type="number" min="1" max="65535"
+                                    placeholder="8080"
+                                    class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                <button type="button" 
+                                        onclick="this.previousElementSibling.stepUp()"
+                                        class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                        <p class="text-sm font-medium text-heading mb-1">Ffplayout link</p>
+                        <div class="flex flex-col gap-1">
+                            <label for="ff-base-url" class="block text-sm font-medium text-heading">Server address</label>
+                            <input id="ff-base-url"
+                                   name="ff_base_url"
+                                   value="{{ settings.ff_base_url if settings else '' }}"
+                                   placeholder="http://192.168.1.10:8787"
+                                   class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                   type="url">
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="ff-user" class="block text-sm font-medium text-heading">Ffplayout user</label>
+                                <input id="ff-user"
+                                       name="ff_user"
+                                       value="{{ settings.ff_user if settings else '' }}"
+                                       autocomplete="off"
+                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                       type="text">
+                            </div>
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="ff-password" class="block text-sm font-medium text-heading">Ffplayout password</label>
+                                <input id="ff-password"
+                                       name="ff_password"
+                                       placeholder="Leave empty to keep it"
+                                       autocomplete="new-password"
+                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                       type="password">
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="ff-channel-id" class="block text-sm font-medium text-heading">Channel ID</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="ff-channel-id"
+                                        name="ff_channel_id"
+                                        value="{{ settings.ff_channel_id if settings else '' }}"
+                                        type="number" min="1"
+                                        placeholder="1"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="ff-overlay-preset" class="block text-sm font-medium text-heading">Overlay Preset</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="ff-overlay-preset"
+                                       name="ff_overlay_preset"
+                                        value="{{ settings.ff_overlay_preset if settings else '' }}"
+                                        type="number" min="1"
+                                        placeholder="1"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="ff-day-start" class="block text-sm font-medium text-heading">Day start</label>
+                            <input id="ff-day-start"
+                                   name="ff_day_start"
+                                   value="{{ settings.ff_day_start if settings else '' }}"
+                                   class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                   type="time" step="1">
+                            <p class="text-[10px] text-zinc-500">Time at which a playlist starts. Empty means ffplayout's default.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-3">
+                        <p class="text-sm font-medium text-heading mb-1">Engine</p>
+                        <p class="text-[10px] text-zinc-500">Playlist generation. Gaps are the filler time between two programs, in seconds.</p>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-filler-type" class="block text-sm font-medium text-heading">Filler type</label>
+                                <input id="engine-filler-type"
+                                       name="engine_filler_type"
+                                       value="{{ settings.engine_filler_type if settings else '' }}"
+                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                       type="text">
+                            </div>
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-jingle-type" class="block text-sm font-medium text-heading">Jingle type</label>
+                                <input id="engine-jingle-type"
+                                       name="engine_jingle_type"
+                                       value="{{ settings.engine_jingle_type if settings else '' }}"
+                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="engine-stretch-families" class="block text-sm font-medium text-heading">Stretchable filler families</label>
+                            <input id="engine-stretch-families"
+                                   name="engine_stretch_families"
+                                   value="{{ settings.engine_stretch_families if settings else '' }}"
+                                   placeholder="Still, Logo"
+                                   class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2 text-xs text-zinc-300 focus:outline-none focus:border-zinc-600 shadow-inner"
+                                   type="text">
+                            <p class="text-[10px] text-zinc-500">Short fixed clips that can be stretched to any length. Separate the families with commas.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-recent-days" class="block text-sm font-medium text-heading">Recent media (days)</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="engine-recent-days"
+                                       name="engine_recent_days"
+                                        value="{{ settings.engine_recent_days if settings else '' }}"
+                                        type="number" min="0"
+                                        placeholder="15"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-hold" class="block text-sm font-medium text-heading">Logo hold (seconds)</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="engine-hold"
+                                       name="engine_hold"
+                                        value="{{ settings.engine_hold if settings else '' }}"
+                                        type="number" min="0" step="0.5"
+                                        placeholder=""
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-gap-target" class="block text-sm font-medium text-heading">Wanted gap (seconds)</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="engine-gap-target"
+                                       name="engine_gap_target"
+                                        value="{{ settings.engine_gap_target if settings else '' }}"
+                                        type="number" min="0" step="0.5"
+                                        placeholder=""
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1 w-1/2">
+                                <label for="engine-gap-max" class="block text-sm font-medium text-heading">Longest gap (seconds)</label>
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="engine-gap-max"
+                                       name="engine_gap_max"
+                                        value="{{ settings.engine_gap_max if settings else '' }}"
+                                        type="number" min="0" step="0.5"
+                                        placeholder=""
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="flex bg-transparent border border-zinc-800/80 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded-lg w-full items-center justify-center cursor-pointer">
+                        <span>Save</span>
+                    </button>
+
+                </form>
+            </section>
+
+            <section class="col-span-3 bg-zinc-900/15 border border-zinc-800/80 rounded-2xl p-4 flex flex-col gap-4 h-full min-h-0 cursor-not-allowed">
+            </section>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

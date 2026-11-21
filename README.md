@@ -13,7 +13,7 @@ Elmuth aims to manage a television playout system capable of scheduling a broadc
 
 </div>
 
-## Informations
+## About Elmuth
 
 > [!CAUTION]
 > elmuth is still under heavy development; use it with the understanding that the product is not yet ready for production.
@@ -80,7 +80,8 @@ elmuth uses the following third party libraries :
 - [x] Setup wizard
 - [x] Playlist editor
 - [x] Playout control
-- [ ] Settings section
+- [x] Settings section **(Use with caution)**
+- [ ] Graphics section (Upstream ffplayout 2.8.0)
 - [x] Media asset management
 
 ### ffplayout

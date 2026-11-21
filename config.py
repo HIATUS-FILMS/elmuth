@@ -87,7 +87,6 @@ def config_soft():  # function to verify if config.json exists, and generates it
             + bcolors.ENDC
         )
         print(" ")
-        print(config_loaded)
 
     with open(file_path, "r", encoding="utf-8") as config_load:
         config_loaded = json.load(config_load)
@@ -99,6 +98,5 @@ def config_soft():  # function to verify if config.json exists, and generates it
         + bcolors.ENDC
     )
     print(" ")
-    print(config_loaded)
 
     return config_loaded

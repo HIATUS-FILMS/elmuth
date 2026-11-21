@@ -94,7 +94,7 @@
             </section>
             <section class="col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 flex flex-col justify-between max-h-fit">
                 <div class="space-y-2">
-                    <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">ffplayout message</h2>
+                    <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">emergency message</h2>
                     <form hx-post="/dashboard/text" hx-swap="none" class="w-full space-y-0">
                         <label for="message" class="block mb-1 text-sm font-medium text-heading">Message text</label>
                         <textarea name="message"
@@ -115,11 +115,25 @@
                             <div class="w-1/2">
                                 <label for="message"
                                        class="block mb-1 text-sm font-medium text-heading">Font size</label>
-                                <input id="font-size"
-                                       name="font_size"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="24">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="font-size"
+                                        name="font_size"
+                                        type="number"
+                                        value="24"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-2 p-0 flex mb-1.5">
@@ -152,11 +166,25 @@
                             </div>
                             <div class="w-1/2">
                                 <label for="message" class="block mb-1 text-sm font-medium text-heading">Speed</label>
-                                <input id="speed"
-                                       name="speed"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="100">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="speed"
+                                        name="speed"
+                                        type="number"
+                                        value="100"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-2 p-0 flex mb-1.5">
@@ -165,18 +193,32 @@
                                        class="block mb-1 text-sm font-medium text-heading">Text color</label>
                                 <input id="txt-color"
                                        name="txt_color"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
+                                       class="h-8 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-1.5 py-1 cursor-pointer focus:outline-none focus:border-zinc-600 shadow-inner [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-xl [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded-xl"
+                                       type="color"
                                        placeholder="#ffffff">
                             </div>
                             <div class="w-1/2">
                                 <label for="message"
                                        class="block mb-1 text-sm font-medium text-heading">Text opacity</label>
-                                <input id="txt-opacity"
-                                       name="txt_opacity"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="1">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="txt-opacity"
+                                        name="txt_opacity"
+                                        type="number"
+                                        value="1"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-2 p-0 flex mb-1.5">
@@ -185,47 +227,103 @@
                                        class="block mb-1 text-sm font-medium text-heading">Background color</label>
                                 <input id="bg-color"
                                        name="bg_color"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
+                                       class="h-8 w-full bg-zinc-950 border border-zinc-800 rounded-xl px-1.5 py-1 cursor-pointer focus:outline-none focus:border-zinc-600 shadow-inner [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-xl [&::-moz-color-swatch]:border-none [&::-moz-color-swatch]:rounded-xl"
+                                       type="color"
                                        placeholder="#000000">
                             </div>
                             <div class="w-1/2">
                                 <label for="message"
                                        class="block mb-1 text-sm font-medium text-heading">Background opacity</label>
-                                <input id="bg-opacity"
-                                       name="bg_opacity"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="0,8">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="bg-opacity"
+                                        name="bg_opacity"
+                                        type="number"
+                                        value="0.8"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-2 p-0 flex mb-1.5">
                             <div class="w-1/2">
                                 <label for="message" class="block mb-1 text-sm font-medium text-heading">Border</label>
-                                <input id="border"
-                                       name="border"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="4">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="border"
+                                        name="border"
+                                        type="number"
+                                        value="4"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                             <div class="w-1/2">
                                 <label for="message" class="block mb-1 text-sm font-medium text-heading">Spacing</label>
-                                <input id="spacing"
-                                       name="spacing"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="4">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="spacing"
+                                        name="spacing"
+                                        type="number"
+                                        value="4"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-2 p-0 flex mb-1.5">
                             <div class="w-full">
                                 <label for="message"
                                        class="block mb-1 text-sm font-medium text-heading">Repetition</label>
-                                <input id="repeat"
-                                       name="repeat"
-                                       class="py-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-xl p-1 text-xs text-zinc-500 focus:outline-none focus:border-zinc-600 placeholder:text-zinc-500 resize-none shadow-inner"
-                                       type="text"
-                                       placeholder="-1">
+                                <div class="flex items-center w-full bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
+                                    <button type="button" 
+                                            onclick="this.nextElementSibling.stepDown()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        −
+                                    </button>
+
+                                    <input id="repeat"
+                                        name="repeat"
+                                        type="number"
+                                        value="-1"
+                                        class="w-full bg-transparent text-center text-xs text-zinc-300 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
+                                    <button type="button" 
+                                            onclick="this.previousElementSibling.stepUp()"
+                                            class="px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors text-xs select-none">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <br>

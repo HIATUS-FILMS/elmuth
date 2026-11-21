@@ -6,10 +6,10 @@ import sqlite3
 import flask_login
 import requests
 from cryptography.fernet import Fernet
-from flask import Flask, Response, jsonify, redirect, render_template, request
+from flask import Flask, Response, jsonify, redirect, render_template, request, session
 from flask_login import LoginManager, UserMixin, login_user
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from settings import settings_register
 from bcolors import bcolors
 from config import config_soft
 from databases import db_connect
@@ -18,6 +18,7 @@ from ffplayout import (
     getinfo_current_media,
     getinfo_current_playlist,
     readaddress,
+    readconfig,
     readid,
     sendinfo_next,
     sendinfo_play,
@@ -116,6 +117,8 @@ def webserver():
         media_agent()
 
     playlist_register(app)
+
+    settings_register(app)
 
     @app.route("/setup", methods=["GET", "POST"])
     def setup_page():
@@ -838,18 +841,30 @@ def webserver():
 
         medias = load_medias()
 
-        result = generate_playlist(template, target_date, medias)
+        result = generate_playlist(
+            template, target_date, medias, readconfig().get("engine", {})
+        )
 
         playlist_items = result.get("items", [])
-        warnings = result.get("warnings", [])
+
+        if not playlist_items:  # nothing was generated, so the current playlist stays untouched
+            print(
+                bcolors.WARNING
+                + datetime.datetime.now().strftime("%H:%M:%S")
+                + f" [WARN] Nothing generated for {target_date}, the playlist was not changed"
+                + bcolors.ENDC
+            )
+            return "", 204
 
         headers = ffheaders()
         base = f"{readaddress()}/api/playlist/{readid()}"
         payload = {"channel": readid(), "date": target_date, "program": playlist_items}
 
         try:
-            resp = requests.post(base, headers=headers, json=payload)
-            if resp.status_code == 200:
+            push = requests.post(base, headers=headers, json=payload)
+            if push.status_code in [200, 201]:
+                session.pop("draft_playlist", None)  # the drafts belonged to the old playlist
+                session.pop("draft_deleted", None)
                 print(
                     bcolors.OKGREEN
                     + datetime.datetime.now().strftime("%H:%M:%S")
@@ -860,9 +875,10 @@ def webserver():
                 print(
                     bcolors.FAIL
                     + datetime.datetime.now().strftime("%H:%M:%S")
-                    + f" [ERROR] Failed to push playlist to ffplayout: {resp.text}"
+                    + f" [ERROR] Failed to push playlist to ffplayout: {push.text}"
                     + bcolors.ENDC
                 )
+                return "", 204
         except Exception as e:
             print(
                 bcolors.FAIL
@@ -870,6 +886,7 @@ def webserver():
                 + f" [ERROR] Playout communication error: {e}"
                 + bcolors.ENDC
             )
+            return "", 204
 
         resp = Response("", 200)
         resp.headers["HX-Redirect"] = f"/playout?playlist_date={target_date}"
@@ -881,7 +898,7 @@ def webserver():
         + " [INFO] The webserver was successfully loaded"
         + bcolors.ENDC
     )
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=int(readconfig()["server"]["port"]))
 
 
 if __name__ == "__main__":

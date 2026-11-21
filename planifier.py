@@ -83,6 +83,10 @@ def add_media_info(items):
 def get_day_start_seconds():  # gets the start of the playlist from the config, ffplayout starts its playlists at day_start
     try:
         day_start = readconfig().get("ffplayout", {}).get("day_start", "00:00:00")
+
+        if not day_start:  # an empty day start means we don't know it, so the playlist is counted from 00:00:00
+            return 0
+
         hours, minutes, seconds = [float(part) for part in day_start.split(":")]
         return hours * 3600 + minutes * 60 + seconds
     except Exception as e:
